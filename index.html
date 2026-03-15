@@ -29,6 +29,7 @@
 
       <div class="header-actions">
         <button id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <button class="wishlist-btn"><i class="fas fa-heart"></i><span class="wishlist-count">0</span></button>
         <div class="search-box">
           <input type="text" id="search-input" placeholder="Mahsulot qidirish...">
           <button id="search-toggle" class="search-btn"><i class="fas fa-search"></i></button>
@@ -268,6 +269,22 @@
       <button class="checkout-btn">Xaridni rasmiylashtirish</button>
     </div>
   </div>
+  <!-- Premium Wishlist Sidebar -->
+  <div id="wishlist-sidebar" class="wishlist-sidebar">
+    <div class="wishlist-header">
+      <h3>Saralanganlar</h3>
+      <button class="close-wishlist"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div id="wishlist-items" class="wishlist-items">
+      <!-- Injected by main.js -->
+      <div class="empty-wishlist-view">
+        <i class="fas fa-heart-broken"></i>
+        <p>Hozircha hech narsa yo'q</p>
+      </div>
+    </div>
+  </div>
+
   <div id="cart-overlay" class="cart-overlay"></div>
   
   <!-- Premium Quick View Modal -->
