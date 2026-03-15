@@ -28,7 +28,11 @@
       </nav>
 
       <div class="header-actions">
-        <button class="search-btn"><i class="fas fa-search"></i></button>
+        <button id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Mahsulot qidirish...">
+          <button id="search-toggle" class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
         <button class="cart-btn"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></button>
       </div>
     </div>
@@ -59,7 +63,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features">
+    <section class="features reveal">
       <div class="container">
         <h2>Nima uchun bizni tanlaysiz?</h2>
         <div class="features-grid">
@@ -96,75 +100,72 @@
     </section>
 
     <!-- Products Section -->
-    <section id="products" class="products">
+    <section id="products" class="products reveal">
       <div class="container">
         <h2>Mashhur mahsulotlar</h2>
-        <div class="products-grid">
-          <div class="product-card">
-            <div class="product-image">
-              <i class="fas fa-mobile-alt"></i>
-              <div class="product-badge">Yangi</div>
-            </div>
-            <div class="product-info">
-              <h3>iPhone 15 Pro</h3>
-              <p>Eng so'nggi texnologiya</p>
-              <div class="product-price">
-                <span class="old-price">$1,199</span>
-                <span class="new-price">$999</span>
+        <div id="products-grid" class="products-grid">
+          <!-- Dynamically populated by main.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials reveal">
+      <div class="container">
+        <h2>Mijozlarimiz fikri</h2>
+        <div class="testimonial-slider">
+          <div class="testimonial-track">
+            <div class="testimonial-card active">
+              <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div>
+                  <h4>Azizbek R.</h4>
+                  <p>Mijoz</p>
+                </div>
               </div>
-              <button class="add-to-cart">Savatchaga qo'shish</button>
+              <p>"iPhone 15 Pro sotib oldim. Yetkazib berish juda tez, mahsulot sifatiga gap yo'q!"</p>
+              <div class="stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+            <div class="testimonial-card">
+              <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div>
+                  <h4>Madina S.</h4>
+                  <p>Mijoz</p>
+                </div>
+              </div>
+              <p>"MacBook Pro M3 uchun eng yaxshi narx shu yerda ekan. Rahmat!"</p>
+              <div class="stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+            <div class="testimonial-card">
+              <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div>
+                  <h4>Jasur B.</h4>
+                  <p>Mijoz</p>
+                </div>
+              </div>
+              <p>"Xizmat ko'rsatish darajasi juda yuqori. Savollarimga tezda javob oldim."</p>
+              <div class="stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+              </div>
             </div>
           </div>
-
-          <div class="product-card">
-            <div class="product-image">
-              <i class="fas fa-laptop"></i>
-              <div class="product-badge sale">Chegirma</div>
-            </div>
-            <div class="product-info">
-              <h3>MacBook Pro M3</h3>
-              <p>Professional ishlar uchun</p>
-              <div class="product-price">
-                <span class="old-price">$2,499</span>
-                <span class="new-price">$1,999</span>
-              </div>
-              <button class="add-to-cart">Savatchaga qo'shish</button>
-            </div>
-          </div>
-
-          <div class="product-card">
-            <div class="product-image">
-              <i class="fas fa-headphones"></i>
-            </div>
-            <div class="product-info">
-              <h3>AirPods Pro</h3>
-              <p>Wireless quloqchinlar</p>
-              <div class="product-price">
-                <span class="new-price">$249</span>
-              </div>
-              <button class="add-to-cart">Savatchaga qo'shish</button>
-            </div>
-          </div>
-
-          <div class="product-card">
-            <div class="product-image">
-              <i class="fas fa-tablet-alt"></i>
-            </div>
-            <div class="product-info">
-              <h3>iPad Air</h3>
-              <p>Kreativ ishlar uchun</p>
-              <div class="product-price">
-                <span class="new-price">$599</span>
-              </div>
-              <button class="add-to-cart">Savatchaga qo'shish</button>
-            </div>
+          <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="about">
+    <section id="about" class="about reveal">
       <div class="container">
         <div class="about-content">
           <div class="about-text">
@@ -231,6 +232,69 @@
       </div>
     </div>
   </footer>
+  <script src="main.js"></script>
+
+  <!-- Smart Cart Sidebar -->
+  <div id="cart-sidebar" class="cart-sidebar">
+    <div class="cart-sidebar-header">
+      <h3>Savatcha</h3>
+      <div class="header-btns">
+        <button class="clear-cart-btn" onclick="clearCart()">Hammasini o'chirish</button>
+        <button class="close-cart"><i class="fas fa-times"></i></button>
+      </div>
+    </div>
+    
+    <!-- Free Shipping Tracker -->
+    <div class="shipping-tracker">
+      <p id="shipping-msg">Bepul yetkazib berish uchun yana <span>$500</span> xarid qiling</p>
+      <div class="progress-bar">
+        <div id="shipping-progress" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="cart-items" class="cart-items">
+      <!-- Items will be injected by main.js -->
+      <div class="empty-cart-view">
+        <i class="fas fa-shopping-basket"></i>
+        <p>Savatchangiz hozircha bo'sh</p>
+      </div>
+    </div>
+    
+    <div class="cart-sidebar-footer">
+      <div class="cart-total">
+        <span>Jami:</span>
+        <span id="cart-total-price">$0</span>
+      </div>
+      <button class="checkout-btn">Xaridni rasmiylashtirish</button>
+    </div>
+  </div>
+  <div id="cart-overlay" class="cart-overlay"></div>
+  
+  <!-- Premium Quick View Modal -->
+  <div id="product-modal" class="product-modal">
+    <button class="close-modal"><i class="fas fa-times"></i></button>
+    <div class="modal-content">
+      <div class="modal-image">
+        <i id="modal-icon" class="fas"></i>
+      </div>
+      <div class="modal-details">
+        <h2 id="modal-title">Mahsulot nomi</h2>
+        <p id="modal-desc">Mahsulot haqida batafsil ma'lumot bu yerda ko'rinadi.</p>
+        <div class="product-specs" id="modal-specs">
+          <!-- Specs will be injected -->
+        </div>
+        <div class="modal-price-action">
+          <div class="modal-price">
+            <span id="modal-price-val">$0</span>
+          </div>
+          <button id="modal-add-btn" class="checkout-btn">Savatchaga qo'shish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Premium Toast Notification -->
+  <div id="toast-container" class="toast-container"></div>
 </body>
 
 </html>
