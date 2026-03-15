@@ -131,16 +131,131 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 6. UI Toggles
-    const closeAll = () => {
-        [cartSidebar, productModal, cartOverlay].forEach(el => el.classList.remove('open'));
-    };
-
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const closeCheckoutBtn = document.querySelector('.close-checkout');
+    
+    // Cart Sidebar Open
     cartBtn.addEventListener('click', () => {
         cartSidebar.classList.add('open');
         cartOverlay.classList.add('open');
     });
 
-    [closeCartBtn, closeModalBtn, cartOverlay].forEach(btn => btn.addEventListener('click', closeAll));
+    // Checkout Initialization
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                showToast("Savatchangiz bo'sh!", "error");
+                return;
+            }
+            openCheckout();
+        });
+    }
+
+    const closeAll = () => {
+        [cartSidebar, productModal, checkoutModal, cartOverlay].forEach(el => el && el.classList.remove('open'));
+    };
+
+    [closeCartBtn, closeModalBtn, closeCheckoutBtn, cartOverlay].forEach(btn => btn && btn.addEventListener('click', closeAll));
+
+    // Checkout Step Logic
+    let currentCheckoutStep = 1;
+    const nextBtn = document.getElementById('next-step');
+    const prevBtn = document.getElementById('prev-step');
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentCheckoutStep)) {
+                if (currentCheckoutStep < 3) {
+                    currentCheckoutStep++;
+                    updateCheckoutUI();
+                } else {
+                    finalizeOrder();
+                }
+            }
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentCheckoutStep > 1) {
+                currentCheckoutStep--;
+                updateCheckoutUI();
+            }
+        });
+    }
+
+    function openCheckout() {
+        currentCheckoutStep = 1;
+        cartSidebar.classList.remove('open');
+        checkoutModal.classList.add('open');
+        cartOverlay.classList.add('open');
+        updateCheckoutUI();
+    }
+
+    function updateCheckoutUI() {
+        // Update Steps
+        document.querySelectorAll('.checkout-step').forEach(step => step.classList.remove('active'));
+        document.getElementById(`step-${currentCheckoutStep}`).classList.add('active');
+
+        // Update Indicator
+        document.querySelectorAll('.step').forEach((s, i) => {
+            s.classList.toggle('active', i + 1 === currentCheckoutStep);
+            s.classList.toggle('completed', i + 1 < currentCheckoutStep);
+        });
+
+        // Button Control
+        prevBtn.style.display = currentCheckoutStep === 1 ? 'none' : 'block';
+        nextBtn.innerText = currentCheckoutStep === 3 ? 'Tasdiqlash' : 'Keyingisi';
+
+        // Summary Data
+        if (currentCheckoutStep === 3) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+            
+            document.getElementById('summary-count').innerText = `${cart.length} ta`;
+            document.getElementById('summary-total').innerText = `$${(total + shipping).toLocaleString()}`;
+            document.getElementById('preview-name').innerText = document.getElementById('checkout-name').value;
+            document.getElementById('preview-phone').innerText = document.getElementById('checkout-phone').value;
+            document.getElementById('preview-address').innerText = document.getElementById('checkout-address').value;
+        }
+    }
+
+    function validateStep(step) {
+        if (step === 1) {
+            const name = document.getElementById('checkout-name').value;
+            const phone = document.getElementById('checkout-phone').value;
+            const address = document.getElementById('checkout-address').value;
+            if (!name || !phone || !address) {
+                showToast("Iltimos, barcha maydonlarni to'ldiring", "error");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function finalizeOrder() {
+        // Hide UI elements
+        document.querySelectorAll('.checkout-step, .step-indicator, .checkout-footer').forEach(el => el.style.display = 'none');
+        document.getElementById('checkout-success').style.display = 'flex';
+        document.getElementById('order-id-val').innerText = Math.floor(10000 + Math.random() * 90000);
+        
+        // Clear Cart
+        localStorage.removeItem('cart');
+        updateCartUI();
+        showToast("Buyurtma qabul qilindi!", "success");
+    }
+
+    // Payment Card Select
+    document.querySelectorAll('.payment-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            card.querySelector('input').checked = true;
+        });
+    });
 
     // 7. Smooth Scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -308,13 +423,21 @@ function handleAddToCart(productId) {
     setTimeout(() => cartBtn.style.animation = 'bounceNumber 0.5s ease', 10);
 }
 
-function showToast(message) {
+function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<i class="fas fa-check-circle"></i><span>${message}</span>`;
+    toast.className = `toast ${type}`;
+
+    let icon = 'fa-check-circle';
+    if (type === 'error') icon = 'fa-exclamation-circle';
+    if (type === 'info') icon = 'fa-info-circle';
+
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
     container.appendChild(toast);
-    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 400); }, 3000);
+    setTimeout(() => { 
+        toast.classList.add('fade-out'); 
+        setTimeout(() => toast.remove(), 400); 
+    }, 3000);
 }
 
 function updateCartUI() {

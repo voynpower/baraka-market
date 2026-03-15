@@ -293,6 +293,109 @@
     </div>
   </div>
 
+  <!-- Premium Checkout Modal -->
+  <div id="checkout-modal" class="checkout-modal">
+    <div class="checkout-header">
+      <h2>Buyurtmani rasmiylashtirish</h2>
+      <button class="close-checkout"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-text">Yetkazib berish</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-text">To'lov</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <span class="step-num">3</span>
+        <span class="step-text">Tasdiqlash</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Shipping Info -->
+    <div class="checkout-step active" id="step-1">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Ismingiz</label>
+          <input type="text" id="checkout-name" placeholder="Masalan: Azizbek">
+        </div>
+        <div class="form-group">
+          <label>Telefon raqamingiz</label>
+          <input type="tel" id="checkout-phone" placeholder="+998 90 123 45 67">
+        </div>
+        <div class="form-group full-width">
+          <label>Manzil</label>
+          <textarea id="checkout-address" placeholder="Shahar, tuman, ko'cha, uy raqami..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Payment Method -->
+    <div class="checkout-step" id="step-2">
+      <div class="payment-options">
+        <label class="payment-card active">
+          <input type="radio" name="payment" value="cash" checked>
+          <i class="fas fa-money-bill-wave"></i>
+          <div class="payment-info">
+            <h4>Naqd pul</h4>
+            <p>Qabul qilganda to'lash</p>
+          </div>
+          <i class="fas fa-check-circle check-icon"></i>
+        </label>
+        <label class="payment-card">
+          <input type="radio" name="payment" value="card">
+          <i class="fas fa-credit-card"></i>
+          <div class="payment-info">
+            <h4>Online karta</h4>
+            <p>Uzcard, Humo, Visa</p>
+          </div>
+          <i class="fas fa-check-circle check-icon"></i>
+        </label>
+      </div>
+    </div>
+
+    <!-- Step 3: Confirmation -->
+    <div class="checkout-step" id="step-3">
+      <div class="order-summary-box">
+        <div class="summary-item">
+          <span>Mahsulotlar soni:</span>
+          <span id="summary-count">0 ta</span>
+        </div>
+        <div class="summary-item total">
+          <span>Umumiy summa:</span>
+          <span id="summary-total">$0</span>
+        </div>
+        <div class="delivery-info-preview">
+          <p><i class="fas fa-user"></i> <span id="preview-name">-</span></p>
+          <p><i class="fas fa-phone"></i> <span id="preview-phone">-</span></p>
+          <p><i class="fas fa-map-marker-alt"></i> <span id="preview-address">-</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success View -->
+    <div class="checkout-success" id="checkout-success">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h2>Tabriklaymiz!</h2>
+      <p>Buyurtmangiz muvaffaqiyatli qabul qilindi.</p>
+      <p class="order-id">Buyurtma raqami: #<span id="order-id-val">84920</span></p>
+      <button class="cta-btn" onclick="location.reload()">Bosh sahifaga qaytish</button>
+    </div>
+
+    <div class="checkout-footer">
+      <button class="prev-btn" id="prev-step" style="display: none;">Orqaga</button>
+      <button class="next-btn" id="next-step">Keyingisi</button>
+    </div>
+  </div>
+
   <!-- Premium Toast Notification -->
   <div id="toast-container" class="toast-container"></div>
 </body>
