@@ -1,10 +1,8 @@
-// Onlayn Market - Premium System (Products, Cart, Search, Wishlist & Dark Mode)
+// Onlayn Market - Premium System (Icon Gallery Edition)
 
-// Configuration
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 15;
 
-// Premium Product Data
 const products = [
     {
         id: 1,
@@ -13,8 +11,8 @@ const products = [
         price: 999,
         oldPrice: 1199,
         badge: 'Yangi',
-        badgeClass: '',
         icon: 'fa-mobile-alt',
+        images: ['fa-mobile-alt', 'fa-camera', 'fa-battery-full', 'fa-microchip'],
         description: 'Titan dizayn, A17 Pro chip va professional kamera tizimi. Eng kuchli iPhone tajribasi.',
         specs: [
             { icon: 'fa-microchip', text: 'A17 Pro Bionic' },
@@ -32,6 +30,7 @@ const products = [
         badge: 'Chegirma',
         badgeClass: 'sale',
         icon: 'fa-laptop',
+        images: ['fa-laptop', 'fa-desktop', 'fa-keyboard', 'fa-bolt'],
         description: 'Professional ishlar va ijod uchun yaratilgan qudrat. M3 chipi bilan yangi bosqichga chiqing.',
         specs: [
             { icon: 'fa-microchip', text: 'Apple M3 Pro' },
@@ -46,6 +45,7 @@ const products = [
         category: 'accessories',
         price: 249,
         icon: 'fa-headphones',
+        images: ['fa-headphones', 'fa-bluetooth', 'fa-volume-up', 'fa-tint'],
         description: 'Musiqa va ovozning yangi darajasi. Active Noise Cancellation va Spatial Audio tajribasi.',
         specs: [
             { icon: 'fa-volume-up', text: 'Active Noise Canceling' },
@@ -60,6 +60,7 @@ const products = [
         category: 'tablets',
         price: 599,
         icon: 'fa-tablet-alt',
+        images: ['fa-tablet-alt', 'fa-pencil-alt', 'fa-video', 'fa-wifi'],
         description: 'Kreativ ishlar va o\'yinlar uchun mukammal hamroh. M2 chipi bilan yanada tezroq va kuchliroq.',
         specs: [
             { icon: 'fa-microchip', text: 'Apple M2 Chip' },
@@ -71,9 +72,6 @@ const products = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Premium Market System Initialized');
-    
-    // 1. Initial Setup
     initTheme();
     renderProducts(products);
     updateCartUI();
@@ -81,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
     initTestimonialSlider();
 
-    // 2. DOM Elements
+    // DOM Elements
     const cartBtn = document.querySelector('.cart-btn');
     const wishlistBtn = document.querySelector('.wishlist-btn');
     const closeCartBtn = document.querySelector('.close-cart');
@@ -90,32 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const wishlistSidebar = document.getElementById('wishlist-sidebar');
     const cartOverlay = document.getElementById('cart-overlay');
     const productModal = document.getElementById('product-modal');
-    const checkoutModal = document.getElementById('checkout-modal');
+    const closeModalBtn = document.querySelector('.close-modal');
+    const themeToggle = document.getElementById('theme-toggle');
     const searchToggle = document.getElementById('search-toggle');
     const searchBox = document.querySelector('.search-box');
     const searchInput = document.getElementById('search-input');
-    const themeToggle = document.getElementById('theme-toggle');
 
-    // 3. UI Toggles
-    const closeAll = () => {
-        [cartSidebar, wishlistSidebar, productModal, checkoutModal, cartOverlay].forEach(el => el && el.classList.remove('open'));
-    };
+    const closeAll = () => { [cartSidebar, wishlistSidebar, productModal, document.getElementById('checkout-modal'), cartOverlay].forEach(el => el && el.classList.remove('open')); };
 
-    cartBtn.addEventListener('click', () => {
-        closeAll();
-        cartSidebar.classList.add('open');
-        cartOverlay.classList.add('open');
-    });
+    cartBtn.addEventListener('click', () => { closeAll(); cartSidebar.classList.add('open'); cartOverlay.classList.add('open'); });
+    wishlistBtn.addEventListener('click', () => { closeAll(); wishlistSidebar.classList.add('open'); cartOverlay.classList.add('open'); });
+    [closeCartBtn, closeWishlistBtn, closeModalBtn, cartOverlay].forEach(btn => btn && btn.addEventListener('click', closeAll));
 
-    wishlistBtn.addEventListener('click', () => {
-        closeAll();
-        wishlistSidebar.classList.add('open');
-        cartOverlay.classList.add('open');
-    });
-
-    [closeCartBtn, closeWishlistBtn, cartOverlay].forEach(btn => btn && btn.addEventListener('click', closeAll));
-
-    // 4. Theme & Search Logic (Same as before)
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -134,16 +118,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts(filtered);
     });
 
-    // 5. Checkout Logic (Condensed)
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (cart.length > 0) openCheckout(); else showToast("Savatchangiz bo'sh!", "error");
+    const categoryCards = document.querySelectorAll('.floating-card');
+    categoryCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const categoryMap = { 'Telefonlar': 'phones', 'Noutbuklar': 'laptops', 'Aksessuarlar': 'accessories' };
+            const category = categoryMap[card.querySelector('span').innerText];
+            if (category) { renderProducts(products.filter(p => p.category === category)); document.getElementById('products').scrollIntoView({ behavior: 'smooth' }); }
         });
-    }
+    });
 
-    // 6. Smooth Scroll
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length > 0) openCheckout(); else showToast("Savatchangiz bo'sh!", "error");
+    });
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -153,29 +142,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/**
- * Renders Products with Wishlist Toggles
- */
+function switchModalImage(iconClass, element) {
+    const mainIcon = document.getElementById('modal-icon');
+    mainIcon.style.opacity = '0';
+    mainIcon.style.transform = 'scale(0.8)';
+    setTimeout(() => {
+        mainIcon.className = `fas ${iconClass}`;
+        mainIcon.style.opacity = '1';
+        mainIcon.style.transform = 'scale(1)';
+    }, 200);
+    document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function openQuickView(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    document.getElementById('modal-title').innerText = product.name;
+    document.getElementById('modal-desc').innerText = product.description;
+    document.getElementById('modal-price-val').innerText = `$${product.price.toLocaleString()}`;
+    const mainIcon = document.getElementById('modal-icon');
+    mainIcon.className = `fas ${product.icon}`;
+    const galleryContainer = document.getElementById('modal-gallery');
+    if (galleryContainer) {
+        galleryContainer.innerHTML = product.images.map((img, idx) => `
+            <div class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="switchModalImage('${img}', this)">
+                <i class="fas ${img}"></i>
+            </div>
+        `).join('');
+    }
+    const specsContainer = document.getElementById('modal-specs');
+    specsContainer.innerHTML = product.specs.map(spec => `<div class="spec-item"><i class="fas ${spec.icon}"></i><span>${spec.text}</span></div>`).join('');
+    const modalAddBtn = document.getElementById('modal-add-btn');
+    modalAddBtn.innerHTML = `<span>Savatchaga qo'shish</span><i class="fas fa-shopping-cart"></i>`;
+    modalAddBtn.classList.remove('success');
+    modalAddBtn.onclick = () => {
+        handleAddToCart(product.id);
+        modalAddBtn.classList.add('success');
+        modalAddBtn.innerHTML = `<span>Savatchaga qo'shildi!</span><i class="fas fa-check"></i>`;
+        setTimeout(() => { modalAddBtn.classList.remove('success'); modalAddBtn.innerHTML = `<span>Savatchaga qo'shish</span><i class="fas fa-shopping-cart"></i>`; }, 2000);
+    };
+    document.getElementById('product-modal').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+}
+
 function renderProducts(items) {
     const productsGrid = document.getElementById('products-grid');
     if (!productsGrid) return;
     productsGrid.innerHTML = '';
-
-    if (items.length === 0) {
-        productsGrid.innerHTML = `<div class="no-results"><i class="fas fa-search-minus"></i><h3>Mahsulot topilmadi</h3></div>`;
-        return;
-    }
-
+    if (items.length === 0) { productsGrid.innerHTML = `<div class="no-results"><i class="fas fa-search-minus"></i><h3>Mahsulot topilmadi</h3></div>`; return; }
     const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
     items.forEach(product => {
         const isWished = wishlist.some(id => id === product.id);
         const productCard = document.createElement('div');
-        productCard.className = 'product-card';
+        productCard.className = 'product-card reveal';
         productCard.onclick = () => openQuickView(product.id);
-        
         let badgeHtml = product.badge ? `<div class="product-badge ${product.badgeClass || ''}">${product.badge}</div>` : '';
-        
         productCard.innerHTML = `
             <button class="wishlist-toggle ${isWished ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist(${product.id})">
                 <i class="fas fa-heart"></i>
@@ -191,23 +213,12 @@ function renderProducts(items) {
     });
 }
 
-/**
- * Wishlist Logic
- */
 function toggleWishlist(productId) {
     let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     const index = wishlist.indexOf(productId);
-    
-    if (index === -1) {
-        wishlist.push(productId);
-        showToast("Sevimli mahsulotlarga qo'shildi");
-    } else {
-        wishlist.splice(index, 1);
-        showToast("Sevimli mahsulotlardan o'chirildi", "info");
-    }
-    
+    if (index === -1) { wishlist.push(productId); showToast("Sevimli mahsulotlarga qo'shildi"); } else { wishlist.splice(index, 1); showToast("Sevimli mahsulotlardan o'chirildi", "info"); }
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    renderProducts(products); // Refresh cards to update heart icons
+    renderProducts(products);
     updateWishlistUI();
 }
 
@@ -215,70 +226,19 @@ function updateWishlistUI() {
     const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     const countElement = document.querySelector('.wishlist-count');
     if (countElement) countElement.innerText = wishlist.length;
-
     const container = document.getElementById('wishlist-items');
     if (!container) return;
-
-    if (wishlist.length === 0) {
-        container.innerHTML = `<div class="empty-wishlist-view"><i class="fas fa-heart-broken"></i><p>Hozircha hech narsa yo'q</p></div>`;
-        return;
-    }
-
+    if (wishlist.length === 0) { container.innerHTML = `<div class="empty-wishlist-view"><i class="fas fa-heart-broken"></i><p>Hozircha hech narsa yo'q</p></div>`; return; }
     container.innerHTML = '';
     wishlist.forEach(id => {
         const product = products.find(p => p.id === id);
         if (product) {
             const div = document.createElement('div');
             div.className = 'wishlist-item';
-            div.innerHTML = `
-                <i class="fas ${product.icon} main-icon"></i>
-                <div class="wishlist-item-info">
-                    <h4>${product.name}</h4>
-                    <p>$${product.price.toLocaleString()}</p>
-                </div>
-                <div class="wishlist-actions">
-                    <button class="add-from-wishlist" onclick="handleAddToCart(${product.id}); toggleWishlist(${product.id})">
-                        <i class="fas fa-cart-plus"></i>
-                    </button>
-                    <button class="remove-from-wishlist" onclick="toggleWishlist(${product.id})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
+            div.innerHTML = `<i class="fas ${product.icon} main-icon"></i><div class="wishlist-item-info"><h4>${product.name}</h4><p>$${product.price.toLocaleString()}</p></div><div class="wishlist-actions"><button class="add-from-wishlist" onclick="handleAddToCart(${product.id}); toggleWishlist(${product.id})"><i class="fas fa-cart-plus"></i></button><button class="remove-from-wishlist" onclick="toggleWishlist(${product.id})"><i class="fas fa-trash"></i></button></div>`;
             container.appendChild(div);
         }
     });
-}
-
-// ... rest of the functions (initTheme, initScrollReveal, openQuickView, handleAddToCart, updateCartUI, etc.)
-// Keeping them for functionality but they are mostly unchanged.
-
-function initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const themeToggle = document.getElementById('theme-toggle');
-    if (savedTheme === 'dark') { document.body.classList.add('dark-mode'); themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; }
-}
-
-function openQuickView(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    document.getElementById('modal-title').innerText = product.name;
-    document.getElementById('modal-desc').innerText = product.description;
-    document.getElementById('modal-price-val').innerText = `$${product.price.toLocaleString()}`;
-    document.getElementById('modal-icon').className = `fas ${product.icon}`;
-    const specsContainer = document.getElementById('modal-specs');
-    specsContainer.innerHTML = product.specs.map(spec => `<div class="spec-item"><i class="fas ${spec.icon}"></i><span>${spec.text}</span></div>`).join('');
-    const modalAddBtn = document.getElementById('modal-add-btn');
-    modalAddBtn.innerHTML = `<span>Savatchaga qo'shish</span><i class="fas fa-shopping-cart"></i>`;
-    modalAddBtn.classList.remove('success');
-    modalAddBtn.onclick = () => {
-        handleAddToCart(product.id);
-        modalAddBtn.classList.add('success');
-        modalAddBtn.innerHTML = `<span>Savatchaga qo'shildi!</span><i class="fas fa-check"></i>`;
-        setTimeout(() => { modalAddBtn.classList.remove('success'); modalAddBtn.innerHTML = `<span>Savatchaga qo'shish</span><i class="fas fa-shopping-cart"></i>`; }, 2000);
-    };
-    document.getElementById('product-modal').classList.add('open');
-    document.getElementById('cart-overlay').classList.add('open');
 }
 
 function handleAddToCart(productId) {
@@ -295,18 +255,6 @@ function handleAddToCart(productId) {
     setTimeout(() => cartBtn.style.animation = 'bounceNumber 0.5s ease', 10);
 }
 
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    let icon = 'fa-check-circle';
-    if (type === 'error') icon = 'fa-exclamation-circle';
-    if (type === 'info') icon = 'fa-info-circle';
-    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 400); }, 3000);
-}
-
 function updateCartUI() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const cartCountElement = document.querySelector('.cart-count');
@@ -316,13 +264,7 @@ function updateCartUI() {
     const totalPriceElement = document.getElementById('cart-total-price');
     const shippingMsg = document.getElementById('shipping-msg');
     const shippingProgress = document.getElementById('shipping-progress');
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<div class="empty-cart-view"><i class="fas fa-shopping-basket"></i><p>Savatchangiz hozircha bo'sh</p></div>`;
-        totalPriceElement.innerText = '$0';
-        if (shippingMsg) shippingMsg.innerHTML = `Bepul yetkazib berish uchun yana <span>$${FREE_SHIPPING_THRESHOLD}</span> xarid qiling`;
-        if (shippingProgress) shippingProgress.style.width = '0%';
-        return;
-    }
+    if (cart.length === 0) { cartItemsContainer.innerHTML = `<div class="empty-cart-view"><i class="fas fa-shopping-basket"></i><p>Savatchangiz hozircha bo'sh</p></div>`; totalPriceElement.innerText = '$0'; if (shippingMsg) shippingMsg.innerHTML = `Bepul yetkazib berish uchun yana <span>$${FREE_SHIPPING_THRESHOLD}</span> xarid qiling`; if (shippingProgress) shippingProgress.style.width = '0%'; return; }
     cartItemsContainer.innerHTML = '';
     let subtotal = 0;
     cart.forEach(item => {
@@ -333,17 +275,10 @@ function updateCartUI() {
         itemDiv.innerHTML = `<i class="fas ${item.icon}"></i><div class="cart-item-info"><h4>${item.name}</h4><p>$${item.price.toLocaleString()} x ${item.quantity}</p><div class="quantity-controls"><button onclick="changeQuantity(${item.id}, -1)"><i class="fas fa-minus"></i></button><span>${item.quantity}</span><button onclick="changeQuantity(${item.id}, 1)"><i class="fas fa-plus"></i></button></div></div><button class="remove-item" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>`;
         cartItemsContainer.appendChild(itemDiv);
     });
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-    totalPriceElement.innerText = `$${(subtotal + shipping).toLocaleString()}`;
+    totalPriceElement.innerText = `$${(subtotal + (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE)).toLocaleString()}`;
     if (shippingMsg && shippingProgress) {
-        if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-            shippingMsg.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-color)"></i> Siz uchun yetkazib berish bepul!';
-            shippingProgress.style.width = '100%';
-        } else {
-            const percent = (subtotal / FREE_SHIPPING_THRESHOLD) * 100;
-            shippingMsg.innerHTML = `Bepul yetkazib berish uchun yana <span>$${(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()}</span> xarid qiling`;
-            shippingProgress.style.width = `${percent}%`;
-        }
+        if (subtotal >= FREE_SHIPPING_THRESHOLD) { shippingMsg.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-color)"></i> Siz uchun yetkazib berish bepul!'; shippingProgress.style.width = '100%'; }
+        else { const percent = (subtotal / FREE_SHIPPING_THRESHOLD) * 100; shippingMsg.innerHTML = `Bepul yetkazib berish uchun yana <span>$${(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()}</span> xarid qiling`; shippingProgress.style.width = `${percent}%`; }
     }
 }
 
@@ -365,9 +300,36 @@ function removeFromCart(productId) {
 
 function clearCart() { if (confirm('Savatchani butunlay bo\'shatmoqchimisiz?')) { localStorage.removeItem('cart'); updateCartUI(); } }
 
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    let icon = type === 'error' ? 'fa-exclamation-circle' : (type === 'info' ? 'fa-info-circle' : 'fa-check-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 400); }, 3000);
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const btn = document.getElementById('theme-toggle');
+    if (saved === 'dark') { document.body.classList.add('dark-mode'); if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>'; }
+}
+
 function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('active'); if (entry.target.id === 'about') animateStats(); } }); }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+function animateStats() {
+    const stats = document.querySelectorAll('.stat-number');
+    stats.forEach(stat => {
+        if (stat.classList.contains('animated')) return;
+        stat.classList.add('animated');
+        const target = parseInt(stat.innerText.replace(/\D/g, ''));
+        let count = 0;
+        const timer = setInterval(() => { count += target / 120; if (count >= target) { stat.innerText = target + (stat.innerText.includes('+') ? '+' : ''); clearInterval(timer); } else { stat.innerText = Math.floor(count) + (stat.innerText.includes('+') ? '+' : ''); } }, 16);
+    });
 }
 
 function initTestimonialSlider() {
@@ -375,13 +337,16 @@ function initTestimonialSlider() {
     const slides = Array.from(document.querySelectorAll('.testimonial-card'));
     const dots = Array.from(document.querySelectorAll('.dot'));
     if (!track || slides.length === 0) return;
-    let currentIdx = 0;
-    function updateSlider(index) {
-        track.style.transform = `translateX(-${index * 100}%)`;
-        slides.forEach((s, i) => s.classList.toggle('active', i === index));
-        dots.forEach((d, i) => d.classList.toggle('active', i === index));
-        currentIdx = index;
-    }
-    dots.forEach((dot, i) => dot.addEventListener('click', () => updateSlider(i)));
-    setInterval(() => { let next = (currentIdx + 1) % slides.length; updateSlider(next); }, 5000);
+    let idx = 0;
+    function update(index) { track.style.transform = `translateX(-${index * 100}%)`; slides.forEach((s, i) => s.classList.toggle('active', i === index)); dots.forEach((d, i) => d.classList.toggle('active', i === index)); idx = index; }
+    dots.forEach((dot, i) => dot.addEventListener('click', () => update(i)));
+    setInterval(() => { idx = (idx + 1) % slides.length; update(idx); }, 5000);
+}
+
+function openCheckout() {
+    const modal = document.getElementById('checkout-modal');
+    const overlay = document.getElementById('cart-overlay');
+    document.getElementById('cart-sidebar').classList.remove('open');
+    modal.classList.add('open');
+    overlay.classList.add('open');
 }

@@ -1522,24 +1522,72 @@ body.dark-mode .quantity-controls {
   grid-template-columns: 1fr 1.2fr;
   height: 100%;
 }
+.modal-image-container {
+  display: flex;
+  flex-direction: column;
+  background: var(--gradient-primary);
+}
 
 .modal-image {
-  background: var(--gradient-primary);
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
+  padding: 3rem;
   position: relative;
 }
 
 .modal-image i {
-  font-size: 10rem;
+  font-size: 8rem;
   color: var(--white);
   filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
-  animation: float 4s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-details {
+.modal-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.thumb-item {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.thumb-item i {
+  font-size: 1.2rem;
+  color: var(--white);
+}
+
+.thumb-item:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.thumb-item.active {
+  background: var(--white);
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.thumb-item.active i {
+  color: var(--primary-color);
+}
+
+/* Animations */
+@keyframes fadeInUp {
   padding: 4rem;
   display: flex;
   flex-direction: column;
