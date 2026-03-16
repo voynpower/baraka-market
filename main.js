@@ -1,4 +1,4 @@
-// Onlayn Market - Premium System (Real Photos, Skeleton UI & Real-time Validation)
+// Baraka Market - Premium System (Real Photos, Skeleton UI & Real-time Validation)
 
 // Configuration
 const FREE_SHIPPING_THRESHOLD = 1500;
