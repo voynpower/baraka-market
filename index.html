@@ -293,7 +293,8 @@
     <div class="modal-content">
       <div class="modal-image-container">
         <div class="modal-image">
-          <i id="modal-icon" class="fas"></i>
+          <div class="skeleton-loader modal-skeleton"></div>
+          <img id="modal-main-img" src="" alt="Product Image" class="hidden">
         </div>
         <div class="modal-gallery" id="modal-gallery">
           <!-- Thumbnails will be injected -->
@@ -346,14 +347,17 @@
         <div class="form-group">
           <label>Ismingiz</label>
           <input type="text" id="checkout-name" placeholder="Masalan: Azizbek">
+          <span class="error-msg">Ism kamida 3 ta harfdan iborat bo'lishi kerak</span>
         </div>
         <div class="form-group">
           <label>Telefon raqamingiz</label>
-          <input type="tel" id="checkout-phone" placeholder="+998 90 123 45 67">
+          <input type="tel" id="checkout-phone" placeholder="+998 (__) ___ __ __">
+          <span class="error-msg">Telefon raqami noto'g'ri kiritilgan</span>
         </div>
         <div class="form-group full-width">
           <label>Manzil</label>
           <textarea id="checkout-address" placeholder="Shahar, tuman, ko'cha, uy raqami..."></textarea>
+          <span class="error-msg">Manzilni to'liq kiritish shart</span>
         </div>
       </div>
     </div>
