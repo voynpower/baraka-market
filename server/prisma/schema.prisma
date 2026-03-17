@@ -15,7 +15,7 @@ model Product {
   oldPrice    Float?
   badge       String?
   badgeClass  String?
-  mainImage   String
+  mainImage   String   @db.Text
   images      Json?
   description String   @db.Text
   specs       Json?

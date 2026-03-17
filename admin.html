@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Baraka Market</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="admin.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <i class="fas fa-user-shield"></i>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">Saytga qaytish</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="container">
+      <div class="admin-header">
+        <h1>Mahsulotlarni boshqarish</h1>
+        <button class="cta-btn add-btn" id="open-add-modal">
+          <i class="fas fa-plus"></i> Yangi mahsulot
+        </button>
+      </div>
+
+      <div class="admin-table-container glass">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Rasm</th>
+              <th>Nomi</th>
+              <th>Kategoriya</th>
+              <th>Narxi</th>
+              <th>Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="admin-product-list">
+            <!-- Products will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Product Modal (Add/Edit) -->
+  <div id="admin-modal" class="product-modal">
+    <button class="close-modal" id="close-admin-modal"><i class="fas fa-times"></i></button>
+    <div class="admin-modal-content">
+      <h2 id="modal-title">Mahsulot qo'shish</h2>
+      <form id="product-form" class="admin-form">
+        <input type="hidden" id="product-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nomi</label>
+            <input type="text" id="p-name" required>
+          </div>
+          <div class="form-group">
+            <label>Kategoriya</label>
+            <select id="p-category" required>
+              <option value="phones">Telefonlar</option>
+              <option value="laptops">Noutbuklar</option>
+              <option value="accessories">Aksessuarlar</option>
+              <option value="tablets">Planshetlar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Narxi ($)</label>
+            <input type="number" id="p-price" required>
+          </div>
+          <div class="form-group">
+            <label>Eski narxi (ixtiyoriy)</label>
+            <input type="number" id="p-old-price">
+          </div>
+          <div class="form-group full-width">
+            <label>Mahsulot rasmi (Upload)</label>
+            <div class="upload-container">
+              <input type="file" id="p-image-file" accept="image/*">
+              <div class="image-preview" id="image-preview">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Rasm tanlash</p>
+              </div>
+            </div>
+            <input type="hidden" id="p-main-image" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Tavsif</label>
+            <textarea id="p-description" rows="3" required></textarea>
+          </div>
+        </div>
+        <button type="submit" class="checkout-btn" id="save-product">Saqlash</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="cart-overlay" class="cart-overlay"></div>
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

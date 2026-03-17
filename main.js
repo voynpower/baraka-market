@@ -353,8 +353,50 @@ function initTheme() {
 }
 
 function initScrollReveal() {
-    const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); }); }, { threshold: 0.1 });
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('active');
+                if (e.target.id === 'about') animateStats();
+            }
+        });
+    }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+function animateStats() {
+    const stats = document.querySelectorAll('.stat-number');
+    stats.forEach(stat => {
+        if (stat.classList.contains('animated')) return;
+        stat.classList.add('animated');
+        
+        const text = stat.innerText;
+        const target = parseInt(text.replace(/\D/g, ''));
+        const suffix = text.replace(/[0-9]/g, '');
+        
+        let count = 0;
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
+        
+        const updateCount = (currentTime) => {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            
+            // Easing function (outQuad)
+            const easeProgress = progress * (2 - progress);
+            
+            count = Math.floor(easeProgress * target);
+            stat.innerText = count + suffix;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateCount);
+            } else {
+                stat.innerText = target + suffix;
+            }
+        };
+        
+        requestAnimationFrame(updateCount);
+    });
 }
 
 function initHeaderScroll() {

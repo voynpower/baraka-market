@@ -1,7 +1,24 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 export declare class ProductsService {
     private prisma;
     constructor(prisma: PrismaService);
+    create(createProductDto: CreateProductDto): Promise<{
+        badgeClass: string | null;
+        name: string;
+        category: string;
+        price: number;
+        oldPrice: number | null;
+        badge: string | null;
+        mainImage: string;
+        images: import("@prisma/client/runtime/library").JsonValue | null;
+        description: string;
+        specs: import("@prisma/client/runtime/library").JsonValue | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+    }>;
     findAll(): Promise<{
         badgeClass: string | null;
         name: string;
@@ -47,4 +64,34 @@ export declare class ProductsService {
         updatedAt: Date;
         id: number;
     }[]>;
+    update(id: number, updateProductDto: UpdateProductDto): Promise<{
+        badgeClass: string | null;
+        name: string;
+        category: string;
+        price: number;
+        oldPrice: number | null;
+        badge: string | null;
+        mainImage: string;
+        images: import("@prisma/client/runtime/library").JsonValue | null;
+        description: string;
+        specs: import("@prisma/client/runtime/library").JsonValue | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+    }>;
+    remove(id: number): Promise<{
+        badgeClass: string | null;
+        name: string;
+        category: string;
+        price: number;
+        oldPrice: number | null;
+        badge: string | null;
+        mainImage: string;
+        images: import("@prisma/client/runtime/library").JsonValue | null;
+        description: string;
+        specs: import("@prisma/client/runtime/library").JsonValue | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+    }>;
 }

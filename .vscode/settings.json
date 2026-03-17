@@ -4,11 +4,15 @@
     "**/node_modules/**": true,
     "**/dist/**": true,
     "**/build/**": true,
-    "**/.next/**": true
+    "**/.next/**": true,
+    "server/node_modules/**": true,
+    "server/dist/**": true
   },
   "search.exclude": {
     "**/node_modules": true,
-    "**/dist": true
+    "**/dist": true,
+    "server/node_modules": true,
+    "server/dist": true
   },
   "typescript.tsserver.maxTsServerMemory": 4096,
   "git.autofetch": false

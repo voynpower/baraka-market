@@ -17,6 +17,11 @@ let ProductsService = class ProductsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async create(createProductDto) {
+        return this.prisma.product.create({
+            data: createProductDto,
+        });
+    }
     async findAll() {
         return this.prisma.product.findMany();
     }
@@ -28,6 +33,17 @@ let ProductsService = class ProductsService {
     async findByCategory(category) {
         return this.prisma.product.findMany({
             where: { category },
+        });
+    }
+    async update(id, updateProductDto) {
+        return this.prisma.product.update({
+            where: { id },
+            data: updateProductDto,
+        });
+    }
+    async remove(id) {
+        return this.prisma.product.delete({
+            where: { id },
         });
     }
 };
