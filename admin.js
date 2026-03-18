@@ -1,9 +1,15 @@
-// admin.js - Admin Dashboard Logic (Robust Fix)
+// admin.js - Admin Dashboard Logic (Secured with JWT + Orders Management)
 const BASE_URL = 'http://localhost:3000';
-const API_URL = `${BASE_URL}/products`;
+const PRODUCTS_URL = `${BASE_URL}/products`;
+const ORDERS_URL = `${BASE_URL}/orders`;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) { window.location.href = 'login.html'; return; }
+
+    // Initial Fetch
     fetchAdminProducts();
+    fetchAdminOrders();
 
     const addBtn = document.getElementById('open-add-modal');
     const modal = document.getElementById('admin-modal');
@@ -14,179 +20,168 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainImageInput = document.getElementById('p-main-image');
     const imageFileInput = document.getElementById('p-image-file');
 
-    // Open Modal for Add
-    addBtn.addEventListener('click', () => {
+    // Logout
+    const navUl = document.querySelector('.nav ul');
+    if (navUl) {
+        const logoutLi = document.createElement('li');
+        logoutLi.innerHTML = `<a href="#" style="color: #e74c3c;" onclick="event.preventDefault(); localStorage.removeItem('admin_token'); window.location.href='login.html';">Chiqish</a>`;
+        navUl.appendChild(logoutLi);
+    }
+
+    // Modal Control
+    const closeModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); };
+    addBtn.onclick = () => {
         form.reset();
         document.getElementById('product-id').value = '';
         document.getElementById('modal-title').innerText = 'Mahsulot qo\'shish';
         imagePreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><p>Rasm tanlash</p>';
         imagePreview.classList.remove('has-image');
-        mainImageInput.value = '';
         modal.classList.add('open');
         overlay.classList.add('open');
-    });
-
-    // Close Modal
-    const closeModal = () => {
-        modal.classList.remove('open');
-        overlay.classList.remove('open');
     };
+    [closeBtn, overlay].forEach(btn => btn.onclick = closeModal);
 
-    [closeBtn, overlay].forEach(btn => btn.addEventListener('click', closeModal));
-
-    // --- IMAGE UPLOAD LOGIC ---
-    imageFileInput.addEventListener('change', async (e) => {
+    // Image Upload
+    imageFileInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         imagePreview.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Yuklanmoqda...</p>';
-
         const formData = new FormData();
         formData.append('image', file);
-
         try {
-            const response = await fetch(`${API_URL}/upload`, {
+            const res = await fetch(`${PRODUCTS_URL}/upload`, {
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
-
-            if (response.ok) {
-                const data = await response.json();
+            const data = await res.json();
+            if (res.ok) {
                 mainImageInput.value = data.url;
-                imagePreview.innerHTML = `<img src="${data.url}" alt="Preview" style="width:100%; height:100%; object-fit:contain;">`;
+                imagePreview.innerHTML = `<img src="${data.url}" alt="Preview">`;
                 imagePreview.classList.add('has-image');
-                showToast('Rasm yuklandi', 'success');
-            } else {
-                throw new Error('Upload failed');
-            }
-        } catch (error) {
-            console.error('Upload error:', error);
-            imagePreview.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Xato</p>';
-            showToast('Rasm yuklashda xatolik', 'error');
-        }
-    });
+                showToast('Rasm yuklandi');
+            } else throw new Error();
+        } catch (e) { showToast('Yuklashda xato', 'error'); }
+    };
 
-    // --- FORM SUBMIT (CREATE / UPDATE) ---
-    form.addEventListener('submit', async (e) => {
+    // Product Form Submit
+    form.onsubmit = async (e) => {
         e.preventDefault();
-        
-        const saveBtn = document.getElementById('save-product');
         const id = document.getElementById('product-id').value;
-        
-        const productData = {
+        const data = {
             name: document.getElementById('p-name').value,
             category: document.getElementById('p-category').value,
             price: parseFloat(document.getElementById('p-price').value),
             oldPrice: document.getElementById('p-old-price').value ? parseFloat(document.getElementById('p-old-price').value) : null,
-            mainImage: mainImageInput.value || 'https://placehold.co/600x400?text=No+Image', // Default if empty
+            mainImage: mainImageInput.value,
             description: document.getElementById('p-description').value,
-            images: [mainImageInput.value || ''],
-            specs: [] 
+            images: [mainImageInput.value],
+            specs: []
         };
-
-        saveBtn.disabled = true;
-        saveBtn.innerText = 'Saqlanmoqda...';
-
         try {
-            const method = id ? 'PATCH' : 'POST';
-            const url = id ? `${API_URL}/${id}` : API_URL;
-
-            const response = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(productData)
+            const res = await fetch(id ? `${PRODUCTS_URL}/${id}` : PRODUCTS_URL, {
+                method: id ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
             });
-
-            if (response.ok) {
-                showToast(id ? 'Muvaffaqiyatli tahrirlandi' : 'Muvaffaqiyatli qo\'shildi', 'success');
-                closeModal();
-                fetchAdminProducts();
-            } else {
-                const err = await response.json();
-                showToast(err.message || 'Xatolik yuz berdi', 'error');
-            }
-        } catch (error) {
-            showToast('Server bilan aloqa yo\'q', 'error');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.innerText = 'Saqlash';
-        }
-    });
+            if (res.ok) { showToast('Saqlandi'); closeModal(); fetchAdminProducts(); }
+            else if (res.status === 401) window.location.href = 'login.html';
+        } catch (e) { showToast('Xato', 'error'); }
+    };
 });
 
+// --- PRODUCT FUNCTIONS ---
 async function fetchAdminProducts() {
     try {
-        const response = await fetch(API_URL);
-        const products = await response.json();
-        renderAdminTable(products);
-    } catch (error) {
-        console.error('Fetch error:', error);
-    }
-}
-
-function renderAdminTable(products) {
-    const list = document.getElementById('admin-product-list');
-    if (!list) return;
-    list.innerHTML = '';
-
-    products.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${p.id}</td>
-            <td>
-                <div style="width:50px; height:50px; overflow:hidden; border-radius:8px;">
-                    <img src="${p.mainImage}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/50x50?text=Error'">
-                </div>
-            </td>
-            <td><strong>${p.name}</strong></td>
-            <td>${p.category}</td>
-            <td>$${p.price.toLocaleString()}</td>
-            <td class="action-btns">
-                <button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
-                <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
-            </td>
-        `;
-        list.appendChild(tr);
-    });
+        const res = await fetch(PRODUCTS_URL);
+        const data = await res.json();
+        const list = document.getElementById('admin-product-list');
+        list.innerHTML = data.map(p => `
+            <tr>
+                <td>${p.id}</td>
+                <td><img src="${p.mainImage}" alt="${p.name}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;"></td>
+                <td>${p.name}</td>
+                <td><span class="badge-cat">${p.category}</span></td>
+                <td>$${p.price.toLocaleString()}</td>
+                <td class="action-btns">
+                    <button onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
 }
 
 window.editProduct = async function(id) {
-    try {
-        const response = await fetch(`${API_URL}/${id}`);
-        const p = await response.json();
-        const imagePreview = document.getElementById('image-preview');
-
-        document.getElementById('product-id').value = p.id;
-        document.getElementById('p-name').value = p.name;
-        document.getElementById('p-category').value = p.category;
-        document.getElementById('p-price').value = p.price;
-        document.getElementById('p-old-price').value = p.oldPrice || '';
-        document.getElementById('p-main-image').value = p.mainImage;
-        document.getElementById('p-description').value = p.description;
-        
-        imagePreview.innerHTML = `<img src="${p.mainImage}" alt="Preview" style="width:100%; height:100%; object-fit:contain;">`;
-        imagePreview.classList.add('has-image');
-
-        document.getElementById('modal-title').innerText = 'Mahsulotni tahrirlash';
-        document.getElementById('admin-modal').classList.add('open');
-        document.getElementById('cart-overlay').classList.add('open');
-    } catch (error) {
-        showToast('Xatolik', 'error');
-    }
-}
+    const res = await fetch(`${PRODUCTS_URL}/${id}`);
+    const p = await res.json();
+    document.getElementById('product-id').value = p.id;
+    document.getElementById('p-name').value = p.name;
+    document.getElementById('p-category').value = p.category;
+    document.getElementById('p-price').value = p.price;
+    document.getElementById('p-old-price').value = p.oldPrice || '';
+    document.getElementById('p-main-image').value = p.mainImage;
+    document.getElementById('p-description').value = p.description;
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = `<img src="${p.mainImage}" alt="Preview">`;
+    preview.classList.add('has-image');
+    document.getElementById('modal-title').innerText = 'Mahsulotni tahrirlash';
+    document.getElementById('admin-modal').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+};
 
 window.deleteProduct = async function(id) {
-    if (!confirm('Haqiqatdan ham o\'chirmoqchimisiz?')) return;
+    if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
+    const token = localStorage.getItem('admin_token');
+    await fetch(`${PRODUCTS_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+    fetchAdminProducts();
+};
+
+// --- ORDER FUNCTIONS ---
+async function fetchAdminOrders() {
+    const token = localStorage.getItem('admin_token');
     try {
-        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        if (response.ok) {
-            showToast('O\'chirildi', 'info');
-            fetchAdminProducts();
-        }
-    } catch (error) {
-        showToast('Server xatosi', 'error');
-    }
+        const res = await fetch(ORDERS_URL, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        const list = document.getElementById('admin-order-list');
+        list.innerHTML = data.map(o => `
+            <tr>
+                <td>${o.id}</td>
+                <td>${o.customerName}</td>
+                <td>${o.customerPhone}</td>
+                <td><strong>$${o.totalAmount.toLocaleString()}</strong></td>
+                <td>
+                    <select class="status-select ${o.status}" onchange="updateOrderStatus(${o.id}, this.value)">
+                        <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Kutilmoqda</option>
+                        <option value="shipping" ${o.status === 'shipping' ? 'selected' : ''}>Yetkazilmoqda</option>
+                        <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Bajarildi</option>
+                        <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Bekor qilindi</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="edit-btn" onclick="viewOrderDetails(${o.id})" title="Batafsil"><i class="fas fa-eye"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
 }
+
+window.updateOrderStatus = async function(id, status) {
+    const token = localStorage.getItem('admin_token');
+    try {
+        const res = await fetch(`${ORDERS_URL}/${id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ status })
+        });
+        if (res.ok) { showToast('Holat yangilandi'); fetchAdminOrders(); }
+    } catch (e) { showToast('Xatolik', 'error'); }
+};
+
+window.viewOrderDetails = function(id) {
+    // Simple order detail view can be expanded later
+    alert(`Buyurtma #${id} tafsilotlari tez orada qo'shiladi.`);
+};
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -196,8 +191,5 @@ function showToast(message, type = 'success') {
     let icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
     toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
     container.appendChild(toast);
-    setTimeout(() => {
-        toast.classList.add('fade-out');
-        setTimeout(() => toast.remove(), 400);
-    }, 3000);
+    setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 400); }, 3000);
 }

@@ -25,6 +25,7 @@
 
   <main class="admin-main">
     <div class="container">
+      <!-- Products Management -->
       <div class="admin-header">
         <h1>Mahsulotlarni boshqarish</h1>
         <button class="cta-btn add-btn" id="open-add-modal">
@@ -45,7 +46,30 @@
             </tr>
           </thead>
           <tbody id="admin-product-list">
-            <!-- Products will be loaded here -->
+            <!-- Products loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Orders Management -->
+      <div class="admin-header" style="margin-top: 5rem;">
+        <h1>Buyurtmalarni boshqarish</h1>
+      </div>
+
+      <div class="admin-table-container glass">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Mijoz</th>
+              <th>Telefon</th>
+              <th>Summa</th>
+              <th>Holat</th>
+              <th>Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="admin-order-list">
+            <!-- Orders loaded via JS -->
           </tbody>
         </table>
       </div>

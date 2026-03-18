@@ -4,27 +4,42 @@ export declare class OrdersService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createOrderDto: CreateOrderDto): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
-        items: import("@prisma/client/runtime/library").JsonValue;
         customerName: string;
         customerPhone: string;
         customerAddress: string;
         totalAmount: number;
         paymentMethod: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        userId: number | null;
     }>;
     findAll(): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
-        items: import("@prisma/client/runtime/library").JsonValue;
         customerName: string;
         customerPhone: string;
         customerAddress: string;
         totalAmount: number;
         paymentMethod: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        userId: number | null;
     }[]>;
+    updateStatus(id: number, status: string): Promise<{
+        customerName: string;
+        customerPhone: string;
+        customerAddress: string;
+        totalAmount: number;
+        paymentMethod: string;
+        items: import("@prisma/client/runtime/library").JsonValue;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        userId: number | null;
+    }>;
 }

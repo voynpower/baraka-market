@@ -1,53 +1,54 @@
 // server/prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const products = [
-    {
-      name: 'iPhone 15 Pro',
-      category: 'phones',
-      price: 999,
-      oldPrice: 1199,
-      badge: 'Yangi',
-      mainImage: 'https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=800',
-      description: 'Titan dizayn, A17 Pro chip va professional kamera tizimi.',
-      images: ['https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=800'],
-      specs: [
-        { icon: 'fa-microchip', val: 'A17 Pro' },
-        { icon: 'fa-camera', val: '48MP' }
-      ]
-    },
-    {
-      name: 'MacBook Pro M3',
-      category: 'laptops',
-      price: 1999,
-      oldPrice: 2499,
-      badge: 'Chegirma',
-      badgeClass: 'sale',
-      mainImage: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800',
-      description: 'Professional ishlar va ijod uchun yaratilgan qudrat.',
-      images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800'],
-      specs: [
-        { icon: 'fa-microchip', val: 'M3 Pro' },
-        { icon: 'fa-memory', val: '18GB' }
-      ]
-    }
-  ];
+  console.log('--- Start Seeding ---');
 
-  console.log('Seeding products...');
-  for (const product of products) {
-    await prisma.product.create({
-      data: product,
-    });
+  // 1. Create Admin Account
+  const adminEmail = 'admin@barakamarket.uz';
+  // Use a fixed salt rounds for consistency
+  const hashedPassword = await bcrypt.hash('admin1234', 10);
+
+  // Upsert ensures we don't create duplicates but update the password if it exists
+  const admin = await prisma.admin.upsert({
+    where: { email: adminEmail },
+    update: {
+      password: hashedPassword,
+    },
+    create: {
+      email: adminEmail,
+      password: hashedPassword,
+      name: 'VoynPower Admin',
+    },
+  });
+  console.log('✅ Admin user ready:', admin.email);
+  console.log('🔑 Password is: admin1234');
+
+  // 2. Sample Products (Optional but good for testing)
+  const productCount = await prisma.product.count();
+  if (productCount === 0) {
+      await prisma.product.create({
+        data: {
+          name: 'iPhone 15 Pro',
+          category: 'phones',
+          price: 999,
+          mainImage: 'https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=800',
+          description: 'Premium smartphone from Apple.',
+          updatedAt: new Date()
+        }
+      });
+      console.log('✅ Sample product created');
   }
-  console.log('Seeding finished.');
+
+  console.log('--- Seeding Finished ---');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Seeding failed:', e);
     process.exit(1);
   })
   .finally(async () => {

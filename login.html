@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Baraka Market</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="admin.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .login-container {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-light);
+    }
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 3rem;
+      border-radius: var(--border-radius-lg);
+      text-align: center;
+    }
+    .login-box h1 { margin-bottom: 2rem; font-weight: 800; }
+    .login-box .form-group { text-align: left; }
+    .login-box .cta-btn { width: 100%; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box glass">
+      <div class="logo" style="margin-bottom: 2rem; justify-content: center;">
+        <i class="fas fa-lock"></i>
+        <span>Admin Login</span>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="admin@barakamarket.uz" required>
+        </div>
+        <div class="form-group">
+          <label>Parol</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="cta-btn">Kirish</button>
+      </form>
+    </div>
+  </div>
+  <div id="toast-container" class="toast-container"></div>
+  <script src="login.js"></script>
+</body>
+</html>

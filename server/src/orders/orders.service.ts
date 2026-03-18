@@ -16,6 +16,7 @@ export class OrdersService {
         totalAmount: createOrderDto.totalAmount,
         paymentMethod: createOrderDto.paymentMethod,
         items: createOrderDto.items,
+        userId: createOrderDto.userId,
       },
     });
   }
@@ -23,6 +24,13 @@ export class OrdersService {
   async findAll() {
     return this.prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateStatus(id: number, status: string) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { status },
     });
   }
 }

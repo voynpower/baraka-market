@@ -19,6 +19,7 @@ class CreateOrderDto {
     totalAmount;
     paymentMethod;
     items;
+    userId;
 }
 exports.CreateOrderDto = CreateOrderDto;
 __decorate([
@@ -55,4 +56,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)
 ], CreateOrderDto.prototype, "items", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateOrderDto.prototype, "userId", void 0);
 //# sourceMappingURL=create-order.dto.js.map

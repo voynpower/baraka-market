@@ -5,4 +5,5 @@ export declare class CreateOrderDto {
     totalAmount: number;
     paymentMethod: string;
     items: any;
+    userId?: number;
 }

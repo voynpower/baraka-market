@@ -1,5 +1,5 @@
 // server/src/orders/dto/create-order.dto.ts
-import { IsString, IsNotEmpty, IsNumber, IsArray, IsObject } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsObject, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {
@@ -30,4 +30,9 @@ export class CreateOrderDto {
   @IsArray()
   @IsNotEmpty()
   items: any;
+
+  @ApiProperty({ example: 1, required: false })
+  @IsNumber()
+  @IsOptional()
+  userId?: number;
 }

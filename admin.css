@@ -274,6 +274,38 @@ body.dark-mode .admin-form textarea:focus {
   border-color: var(--primary-color);
 }
 
+.badge-cat {
+  background: var(--bg-light);
+  padding: 5px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+/* Order Status Badges */
+.status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.status-select.pending { color: #f39c12; border-color: #f39c12; }
+.status-select.shipping { color: #3498db; border-color: #3498db; }
+.status-select.completed { color: #27ae60; border-color: #27ae60; }
+.status-select.cancelled { color: #e74c3c; border-color: #e74c3c; }
+
+body.dark-mode .status-select {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Modal Adjustments */
 
 /* Dark Mode Fixes */

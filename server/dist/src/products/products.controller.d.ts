@@ -5,12 +5,12 @@ export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
     create(createProductDto: CreateProductDto): Promise<{
-        badgeClass: string | null;
         name: string;
         category: string;
         price: number;
         oldPrice: number | null;
         badge: string | null;
+        badgeClass: string | null;
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
@@ -23,12 +23,12 @@ export declare class ProductsController {
         url: string;
     };
     findAll(category?: string): Promise<{
-        badgeClass: string | null;
         name: string;
         category: string;
         price: number;
         oldPrice: number | null;
         badge: string | null;
+        badgeClass: string | null;
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
@@ -38,12 +38,12 @@ export declare class ProductsController {
         id: number;
     }[]>;
     findOne(id: string): Promise<{
-        badgeClass: string | null;
         name: string;
         category: string;
         price: number;
         oldPrice: number | null;
         badge: string | null;
+        badgeClass: string | null;
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
@@ -53,12 +53,12 @@ export declare class ProductsController {
         id: number;
     } | null>;
     update(id: string, updateProductDto: UpdateProductDto): Promise<{
-        badgeClass: string | null;
         name: string;
         category: string;
         price: number;
         oldPrice: number | null;
         badge: string | null;
+        badgeClass: string | null;
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
@@ -68,12 +68,12 @@ export declare class ProductsController {
         id: number;
     }>;
     remove(id: string): Promise<{
-        badgeClass: string | null;
         name: string;
         category: string;
         price: number;
         oldPrice: number | null;
         badge: string | null;
+        badgeClass: string | null;
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
