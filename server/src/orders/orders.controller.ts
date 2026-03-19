@@ -18,6 +18,16 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
+  // IMPORTANT: Static routes like 'stats' must come BEFORE dynamic routes like ':id'
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get order statistics (Admin only)' })
+  async getStats() {
+    return this.ordersService.getStats();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
@@ -32,7 +42,7 @@ export class OrdersController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update order status (Admin only)' })
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.ordersService.updateStatus(+id, status);
+  updateStatus(@Param('id') id: string, @Body() body: { status: string }) {
+    return this.ordersService.updateStatus(+id, body.status);
   }
 }

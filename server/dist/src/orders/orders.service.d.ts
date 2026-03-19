@@ -4,6 +4,7 @@ export declare class OrdersService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createOrderDto: CreateOrderDto): Promise<{
+        id: number;
         customerName: string;
         customerPhone: string;
         customerAddress: string;
@@ -13,10 +14,10 @@ export declare class OrdersService {
         status: string;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
         userId: number | null;
     }>;
     findAll(): Promise<{
+        id: number;
         customerName: string;
         customerPhone: string;
         customerAddress: string;
@@ -26,10 +27,10 @@ export declare class OrdersService {
         status: string;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
         userId: number | null;
     }[]>;
     updateStatus(id: number, status: string): Promise<{
+        id: number;
         customerName: string;
         customerPhone: string;
         customerAddress: string;
@@ -39,7 +40,16 @@ export declare class OrdersService {
         status: string;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
         userId: number | null;
+    }>;
+    getStats(): Promise<{
+        todayRevenue: number;
+        todayOrdersCount: number;
+        totalOrdersCount: number;
+        totalProductsCount: number;
+        chartData: {
+            date: string;
+            value: unknown;
+        }[];
     }>;
 }

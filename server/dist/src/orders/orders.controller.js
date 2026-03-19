@@ -28,11 +28,14 @@ let OrdersController = class OrdersController {
     create(createOrderDto) {
         return this.ordersService.create(createOrderDto);
     }
+    async getStats() {
+        return this.ordersService.getStats();
+    }
     findAll() {
         return this.ordersService.findAll();
     }
-    updateStatus(id, status) {
-        return this.ordersService.updateStatus(+id, status);
+    updateStatus(id, body) {
+        return this.ordersService.updateStatus(+id, body.status);
     }
 };
 exports.OrdersController = OrdersController;
@@ -44,6 +47,16 @@ __decorate([
     __metadata("design:paramtypes", [create_order_dto_1.CreateOrderDto]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(roles_decorator_1.Role.ADMIN),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get order statistics (Admin only)' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getStats", null);
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
@@ -61,9 +74,9 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update order status (Admin only)' }),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)('status')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "updateStatus", null);
 exports.OrdersController = OrdersController = __decorate([

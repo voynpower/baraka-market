@@ -5,7 +5,10 @@ export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
     create(createProductDto: CreateProductDto): Promise<{
+        id: number;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         category: string;
         price: number;
         oldPrice: number | null;
@@ -14,16 +17,17 @@ export declare class ProductsController {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }>;
     uploadFile(file: Express.Multer.File): {
         url: string;
     };
     findAll(category?: string): Promise<{
+        id: number;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         category: string;
         price: number;
         oldPrice: number | null;
@@ -32,13 +36,14 @@ export declare class ProductsController {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }[]>;
     findOne(id: string): Promise<{
+        id: number;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         category: string;
         price: number;
         oldPrice: number | null;
@@ -47,13 +52,14 @@ export declare class ProductsController {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     } | null>;
     update(id: string, updateProductDto: UpdateProductDto): Promise<{
+        id: number;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         category: string;
         price: number;
         oldPrice: number | null;
@@ -62,13 +68,14 @@ export declare class ProductsController {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }>;
     remove(id: string): Promise<{
+        id: number;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         category: string;
         price: number;
         oldPrice: number | null;
@@ -77,9 +84,7 @@ export declare class ProductsController {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }>;
 }

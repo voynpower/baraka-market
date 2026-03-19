@@ -17,6 +17,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     findAll(): Promise<{
@@ -32,6 +33,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     findOne(id: number): Promise<{
@@ -47,6 +49,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     } | null>;
     findByCategory(category: string): Promise<{
@@ -62,6 +65,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     update(id: number, updateProductDto: UpdateProductDto): Promise<{
@@ -77,6 +81,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     remove(id: number): Promise<{
@@ -92,6 +97,7 @@ export declare class ProductsService {
         mainImage: string;
         images: import("@prisma/client/runtime/library").JsonValue | null;
         description: string;
+        stock: number;
         specs: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
 }

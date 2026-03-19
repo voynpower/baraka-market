@@ -1,15 +1,16 @@
-// admin.js - Admin Dashboard Logic (Secured with JWT + Orders Management)
+// admin.js - Admin Dashboard Logic (Final Visual Statistics Edition)
 const BASE_URL = 'http://localhost:3000';
 const PRODUCTS_URL = `${BASE_URL}/products`;
 const ORDERS_URL = `${BASE_URL}/orders`;
+
+let salesChart = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('admin_token');
     if (!token) { window.location.href = 'login.html'; return; }
 
-    // Initial Fetch
-    fetchAdminProducts();
-    fetchAdminOrders();
+    // Initial Data Load
+    refreshDashboard();
 
     const addBtn = document.getElementById('open-add-modal');
     const modal = document.getElementById('admin-modal');
@@ -28,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         navUl.appendChild(logoutLi);
     }
 
-    // Modal Control
     const closeModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); };
     addBtn.onclick = () => {
         form.reset();
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-title').innerText = 'Mahsulot qo\'shish';
         imagePreview.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><p>Rasm tanlash</p>';
         imagePreview.classList.remove('has-image');
+        mainImageInput.value = '';
         modal.classList.add('open');
         overlay.classList.add('open');
     };
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { showToast('Yuklashda xato', 'error'); }
     };
 
-    // Product Form Submit
+    // Form Submit
     form.onsubmit = async (e) => {
         e.preventDefault();
         const id = document.getElementById('product-id').value;
@@ -72,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: document.getElementById('p-name').value,
             category: document.getElementById('p-category').value,
             price: parseFloat(document.getElementById('p-price').value),
+            stock: parseInt(document.getElementById('p-stock').value || 0),
             oldPrice: document.getElementById('p-old-price').value ? parseFloat(document.getElementById('p-old-price').value) : null,
             mainImage: mainImageInput.value,
             description: document.getElementById('p-description').value,
@@ -84,13 +86,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(data)
             });
-            if (res.ok) { showToast('Saqlandi'); closeModal(); fetchAdminProducts(); }
+            if (res.ok) { showToast('Saqlandi'); closeModal(); refreshDashboard(); }
             else if (res.status === 401) window.location.href = 'login.html';
         } catch (e) { showToast('Xato', 'error'); }
     };
 });
 
-// --- PRODUCT FUNCTIONS ---
+async function refreshDashboard() {
+    await Promise.all([
+        fetchAdminProducts(),
+        fetchAdminOrders(),
+        fetchDashboardStats()
+    ]);
+}
+
+async function fetchDashboardStats() {
+    const token = localStorage.getItem('admin_token');
+    const summaryEl = document.getElementById('chart-summary-data');
+    try {
+        const res = await fetch(`${ORDERS_URL}/stats`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Stats failed');
+        const data = await res.json();
+
+        document.getElementById('stat-today-revenue').innerText = `$${(data.todayRevenue || 0).toLocaleString()}`;
+        document.getElementById('stat-today-orders').innerText = `${data.todayOrdersCount || 0} ta`;
+        document.getElementById('stat-total-products').innerText = `${data.totalProductsCount || 0} ta`;
+
+        if (data.chartData) {
+            renderSalesChart(data.chartData);
+            const totalWeekly = data.chartData.reduce((s, d) => s + d.value, 0);
+            const avgDaily = Math.round(totalWeekly / 7);
+            summaryEl.innerHTML = `
+                <div class="summary-item"><span>Haftalik jami:</span><strong>$${totalWeekly.toLocaleString()}</strong></div>
+                <div class="summary-item"><span>O'rtacha kunlik:</span><strong>$${avgDaily.toLocaleString()}</strong></div>
+                <div class="summary-item"><span>Muvaffaqiyatli buyurtmalar:</span><strong>${data.totalOrdersCount || 0} ta</strong></div>
+            `;
+        }
+    } catch (e) {
+        console.error(e);
+        summaryEl.innerHTML = '<p style="color: var(--text-light);">Ma\'lumotlarni yuklashda xatolik yuz berdi.</p>';
+    }
+}
+
+function renderSalesChart(chartData) {
+    const ctx = document.getElementById('salesChart');
+    if (!ctx) return;
+    if (salesChart) salesChart.destroy();
+    salesChart = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: chartData.map(d => d.date),
+            datasets: [{
+                label: 'Tushum ($)',
+                data: chartData.map(d => d.value),
+                borderColor: '#ff6b35',
+                backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointHoverRadius: 8,
+                pointBackgroundColor: '#ff6b35'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
 async function fetchAdminProducts() {
     try {
         const res = await fetch(PRODUCTS_URL);
@@ -103,6 +175,7 @@ async function fetchAdminProducts() {
                 <td>${p.name}</td>
                 <td><span class="badge-cat">${p.category}</span></td>
                 <td>$${p.price.toLocaleString()}</td>
+                <td><strong style="color: ${p.stock <= 0 ? '#e74c3c' : (p.stock < 5 ? '#f39c12' : '#27ae60')}">${p.stock <= 0 ? 'Tugagan' : p.stock + ' ta'}</strong></td>
                 <td class="action-btns">
                     <button onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
                     <button onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
@@ -119,6 +192,7 @@ window.editProduct = async function(id) {
     document.getElementById('p-name').value = p.name;
     document.getElementById('p-category').value = p.category;
     document.getElementById('p-price').value = p.price;
+    document.getElementById('p-stock').value = p.stock || 0;
     document.getElementById('p-old-price').value = p.oldPrice || '';
     document.getElementById('p-main-image').value = p.mainImage;
     document.getElementById('p-description').value = p.description;
@@ -134,10 +208,9 @@ window.deleteProduct = async function(id) {
     if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
     const token = localStorage.getItem('admin_token');
     await fetch(`${PRODUCTS_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-    fetchAdminProducts();
+    refreshDashboard();
 };
 
-// --- ORDER FUNCTIONS ---
 async function fetchAdminOrders() {
     const token = localStorage.getItem('admin_token');
     try {
@@ -158,9 +231,7 @@ async function fetchAdminOrders() {
                         <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Bekor qilindi</option>
                     </select>
                 </td>
-                <td>
-                    <button class="edit-btn" onclick="viewOrderDetails(${o.id})" title="Batafsil"><i class="fas fa-eye"></i></button>
-                </td>
+                <td><button class="edit-btn" onclick="viewOrderDetails(${o.id})"><i class="fas fa-eye"></i></button></td>
             </tr>
         `).join('');
     } catch (e) { console.error(e); }
@@ -174,14 +245,11 @@ window.updateOrderStatus = async function(id, status) {
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ status })
         });
-        if (res.ok) { showToast('Holat yangilandi'); fetchAdminOrders(); }
+        if (res.ok) { showToast('Holat yangilandi'); refreshDashboard(); }
     } catch (e) { showToast('Xatolik', 'error'); }
 };
 
-window.viewOrderDetails = function(id) {
-    // Simple order detail view can be expanded later
-    alert(`Buyurtma #${id} tafsilotlari tez orada qo'shiladi.`);
-};
+window.viewOrderDetails = function(id) { alert(`Buyurtma #${id} tafsilotlari tez orada qo'shiladi.`); };
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
