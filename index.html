@@ -7,6 +7,7 @@
   <title>Baraka Market - Eng yaxshi mahsulotlar</title>
   <link rel="stylesheet" href="main.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -31,8 +32,8 @@
         <button id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
         <button class="wishlist-btn"><i class="fas fa-heart"></i><span class="wishlist-count">0</span></button>
         <div class="search-box">
-          <input type="text" id="search-input" placeholder="Mahsulot qidirish...">
           <button id="search-toggle" class="search-btn"><i class="fas fa-search"></i></button>
+          <input type="text" id="search-input" placeholder="Mahsulot qidirish...">
         </div>
         <button class="cart-btn"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></button>
         <button id="user-auth-btn" class="wishlist-btn"><i class="fas fa-user"></i></button>
@@ -49,18 +50,9 @@
         <button class="cta-btn">Hozir xarid qiling</button>
       </div>
       <div class="hero-image">
-        <div class="floating-card card-1">
-          <i class="fas fa-mobile-alt"></i>
-          <span>Telefonlar</span>
-        </div>
-        <div class="floating-card card-2">
-          <i class="fas fa-laptop"></i>
-          <span>Noutbuklar</span>
-        </div>
-        <div class="floating-card card-3">
-          <i class="fas fa-headphones"></i>
-          <span>Aksessuarlar</span>
-        </div>
+        <div class="floating-card card-1"><i class="fas fa-mobile-alt"></i><span>Telefonlar</span></div>
+        <div class="floating-card card-2"><i class="fas fa-laptop"></i><span>Noutbuklar</span></div>
+        <div class="floating-card card-3"><i class="fas fa-headphones"></i><span>Aksessuarlar</span></div>
       </div>
     </section>
 
@@ -69,34 +61,36 @@
       <div class="container">
         <h2>Nima uchun bizni tanlaysiz?</h2>
         <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <i class="fas fa-shipping-fast"></i>
+          <div class="feature-card"><div class="feature-icon"><i class="fas fa-shipping-fast"></i></div><h3>Tez yetkazib berish</h3><p>24 soat ichida bepul yetkazib berish</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>Xavfsiz to'lov</h3><p>Barcha to'lov usullari himoyalangan</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fas fa-undo"></i></div><h3>Qaytarish kafolati</h3><p>30 kun ichida bepul qaytarish</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>24/7 qo'llab-quvvatlash</h3><p>Har doim sizga yordam beramiz</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories">
+      <div class="container">
+        <div class="categories-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2.5rem;">
+          <h2 style="margin-bottom: 0;">Kategoriyalar</h2>
+          <div class="filter-controls">
+            <div id="sort-badge-wrapper" class="sort-wrapper status-default">
+              <select id="sort-select" class="sort-select">
+                <option value="default">Saralash: Standart</option>
+                <option value="price-asc">Narx: Arzonroq</option>
+                <option value="price-desc">Narx: Qimmatroq</option>
+                <option value="newest">Yangi mahsulotlar</option>
+              </select>
             </div>
-            <h3>Tez yetkazib berish</h3>
-            <p>24 soat ichida bepul yetkazib berish</p>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">
-              <i class="fas fa-shield-alt"></i>
-            </div>
-            <h3>Xavfsiz to'lov</h3>
-            <p>Barcha to'lov usullari himoyalangan</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">
-              <i class="fas fa-undo"></i>
-            </div>
-            <h3>Qaytarish kafolati</h3>
-            <p>30 kun ichida bepul qaytarish</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">
-              <i class="fas fa-headset"></i>
-            </div>
-            <h3>24/7 qo'llab-quvvatlash</h3>
-            <p>Har doim sizga yordam beramiz</p>
-          </div>
+        </div>
+        <div class="categories-tabs">
+          <button class="tab-btn active" data-category="all">Barchasi</button>
+          <button class="tab-btn" data-category="phones">Telefonlar</button>
+          <button class="tab-btn" data-category="laptops">Noutbuklar</button>
+          <button class="tab-btn" data-category="accessories">Aksessuarlar</button>
+          <button class="tab-btn" data-category="tablets">Planshetlar</button>
         </div>
       </div>
     </section>
@@ -104,10 +98,7 @@
     <!-- Products Section -->
     <section id="products" class="products reveal">
       <div class="container">
-        <h2>Mashhur mahsulotlar</h2>
-        <div id="products-grid" class="products-grid">
-          <!-- Dynamically populated by main.js -->
-        </div>
+        <div id="products-grid" class="products-grid"></div>
       </div>
     </section>
 
@@ -118,50 +109,17 @@
         <div class="testimonial-slider">
           <div class="testimonial-track">
             <div class="testimonial-card active">
-              <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <div>
-                  <h4>Azizbek R.</h4>
-                  <p>Mijoz</p>
-                </div>
-              </div>
+              <div class="user-info"><i class="fas fa-user-circle"></i><div><h4>Azizbek R.</h4><p>Mijoz</p></div></div>
               <p>"iPhone 15 Pro sotib oldim. Yetkazib berish juda tez, mahsulot sifatiga gap yo'q!"</p>
-              <div class="stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
+              <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
             </div>
             <div class="testimonial-card">
-              <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <div>
-                  <h4>Madina S.</h4>
-                  <p>Mijoz</p>
-                </div>
-              </div>
+              <div class="user-info"><i class="fas fa-user-circle"></i><div><h4>Madina S.</h4><p>Mijoz</p></div></div>
               <p>"MacBook Pro M3 uchun eng yaxshi narx shu yerda ekan. Rahmat!"</p>
-              <div class="stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-            </div>
-            <div class="testimonial-card">
-              <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <div>
-                  <h4>Jasur B.</h4>
-                  <p>Mijoz</p>
-                </div>
-              </div>
-              <p>"Xizmat ko'rsatish darajasi juda yuqori. Savollarimga tezda javob oldim."</p>
-              <div class="stars">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-              </div>
+              <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
             </div>
           </div>
-          <div class="slider-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
+          <div class="slider-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
         </div>
       </div>
     </section>
@@ -172,67 +130,33 @@
         <div class="about-content">
           <div class="about-text">
             <h2>Biz haqimizda</h2>
-            <p>Baraka Market - bu O'zbekistondagi eng yirik elektron tijorat platformasi. Biz 2020 yildan beri
-              mijozlarimizga eng yaxshi xizmat ko'rsatib kelmoqdamiz.</p>
-            <p>Bizning missiyamiz - har bir mijozimizga eng yaxshi mahsulotlarni eng arzon narxlarda taqdim etish.</p>
+            <p>Baraka Market - bu O'zbekistondagi eng yirik elektron tijorat platformasi. Biz 2020 yildan beri mijozlarimizga eng yaxshi xizmat ko'rsatib kelmoqdamiz.</p>
             <div class="stats">
-              <div class="stat">
-                <span class="stat-number">50K+</span>
-                <span class="stat-label">Mamnun mijozlar</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number">1000+</span>
-                <span class="stat-label">Mahsulotlar</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number">24/7</span>
-                <span class="stat-label">Qo'llab-quvvatlash</span>
-              </div>
+              <div class="stat"><span class="stat-number">50K+</span><span class="stat-label">Mamnun mijozlar</span></div>
+              <div class="stat"><span class="stat-number">1000+</span><span class="stat-label">Mahsulotlar</span></div>
+              <div class="stat"><span class="stat-number">24/7</span><span class="stat-label">Qo'llab-quvvatlash</span></div>
             </div>
           </div>
-          <div class="about-image">
-            <div class="image-placeholder">
-              <i class="fas fa-store"></i>
-            </div>
-          </div>
+          <div class="about-image"><div class="image-placeholder"><i class="fas fa-store"></i></div></div>
         </div>
       </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
       <div class="container">
         <h2>Biz bilan bog'laning</h2>
         <div class="contact-container">
           <form id="contact-form" class="contact-form" action="https://formspree.io/f/xlgppjww" method="POST">
-            <div class="form-group">
-              <label>Ismingiz</label>
-              <input type="text" name="name" placeholder="Ismingizni kiriting" required>
-            </div>
-            <div class="form-group">
-              <label>Emailingiz</label>
-              <input type="email" name="email" placeholder="Emailingizni kiriting" required>
-            </div>
-            <div class="form-group full-width">
-              <label>Xabaringiz (Hamkorlik bo'yicha)</label>
-              <textarea name="message" placeholder="Hamkorlik taklifi yoki savolingizni yozing..." rows="5" required></textarea>
-            </div>
-            <button type="submit" class="cta-btn" id="contact-submit-btn">
-              <span>Yuborish</span>
-              <i class="fas fa-paper-plane"></i>
-            </button>
+            <div class="form-group"><label>Ismingiz</label><input type="text" name="name" placeholder="Ismingizni kiriting" required></div>
+            <div class="form-group"><label>Emailingiz</label><input type="email" name="email" placeholder="Emailingizni kiriting" required></div>
+            <div class="form-group full-width"><label>Xabaringiz</label><textarea name="message" placeholder="Xabaringizni yozing..." rows="5" required></textarea></div>
+            <button type="submit" class="cta-btn"><span>Yuborish</span><i class="fas fa-paper-plane"></i></button>
           </form>
           <div class="contact-info">
-            <div class="info-item">
-              <i class="fas fa-map-marker-alt"></i>
-              <p>Fargona Shahar, Rishton tumani</p>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-phone"></i>
-              <p>+998 90 123 45 67</p>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-envelope"></i>
-              <p>info@barakamarket.uz</p>
-            </div>
+            <div class="info-item"><i class="fas fa-map-marker-alt"></i><p>Fargona Shahar, Rishton tumani</p></div>
+            <div class="info-item"><i class="fas fa-phone"></i><p>+998 90 123 45 67</p></div>
+            <div class="info-item"><i class="fas fa-envelope"></i><p>info@barakamarket.uz</p></div>
           </div>
         </div>
       </div>
@@ -243,10 +167,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-section">
-          <div class="logo">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Baraka Market</span>
-          </div>
+          <div class="logo"><i class="fas fa-shopping-bag"></i><span>Baraka Market</span></div>
           <p>Eng yaxshi mahsulotlar bir joyda</p>
         </div>
         <div class="footer-section">
@@ -254,274 +175,101 @@
           <ul>
             <li><a href="#home">Bosh sahifa</a></li>
             <li><a href="#products">Mahsulotlar</a></li>
-            <li><a href="#about">Biz haqimizda</a></li>
-            <li><a href="#contact">Aloqa</a></li>
-            <li><a href="admin.html">Admin Panel</a></li>
+            <li><a href="admin.html" style="color: var(--primary-color); font-weight: 700;">Admin Panel</a></li>
           </ul>
         </div>
         <div class="footer-section">
           <h3>Ijtimoiy tarmoqlar</h3>
-          <div class="social-links">
-            <a href="#"><i class="fab fa-telegram"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-          </div>
+          <div class="social-links"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a></div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024 Baraka Market. Barcha huquqlar himoyalangan.</p>
-      </div>
+      <div class="footer-bottom"><p>&copy; 2024 Baraka Market. Barcha huquqlar himoyalangan.</p></div>
     </div>
   </footer>
-  <script src="main.js"></script>
 
-  <!-- Smart Cart Sidebar -->
+  <!-- Sidebars & Modals -->
   <div id="cart-sidebar" class="cart-sidebar">
-    <div class="cart-sidebar-header">
-      <h3>Savatcha</h3>
-      <div class="header-btns">
-        <button class="clear-cart-btn" onclick="clearCart()">Hammasini o'chirish</button>
-        <button class="close-cart"><i class="fas fa-times"></i></button>
-      </div>
-    </div>
-    
-    <!-- Free Shipping Tracker -->
-    <div class="shipping-tracker">
-      <p id="shipping-msg">Bepul yetkazib berish uchun yana <span>$500</span> xarid qiling</p>
-      <div class="progress-bar">
-        <div id="shipping-progress" class="progress-fill"></div>
-      </div>
-    </div>
-
-    <div id="cart-items" class="cart-items">
-      <!-- Items will be injected by main.js -->
-      <div class="empty-cart-view">
-        <i class="fas fa-shopping-basket"></i>
-        <p>Savatchangiz hozircha bo'sh</p>
-      </div>
-    </div>
-    
+    <div class="cart-sidebar-header"><h3>Savatcha</h3><button class="close-cart"><i class="fas fa-times"></i></button></div>
+    <div id="cart-items" class="cart-items"></div>
     <div class="cart-sidebar-footer">
-      <div class="cart-total">
-        <span>Jami:</span>
-        <span id="cart-total-price">$0</span>
-      </div>
+      <div class="cart-total"><span>Jami:</span><span id="cart-total-price">$0</span></div>
       <button class="checkout-btn">Xaridni rasmiylashtirish</button>
     </div>
   </div>
-  <!-- Premium Wishlist Sidebar -->
+
   <div id="wishlist-sidebar" class="wishlist-sidebar">
-    <div class="wishlist-header">
-      <h3>Saralanganlar</h3>
-      <button class="close-wishlist"><i class="fas fa-times"></i></button>
-    </div>
-    
-    <div id="wishlist-items" class="wishlist-items">
-      <!-- Injected by main.js -->
-      <div class="empty-wishlist-view">
-        <i class="fas fa-heart-broken"></i>
-        <p>Hozircha hech narsa yo'q</p>
-      </div>
-    </div>
+    <div class="wishlist-header"><h3>Saralanganlar</h3><button class="close-wishlist"><i class="fas fa-times"></i></button></div>
+    <div id="wishlist-items" class="wishlist-items"></div>
   </div>
 
   <div id="cart-overlay" class="cart-overlay"></div>
-  
-  <!-- Premium Quick View Modal -->
+
+  <!-- Quick View Modal -->
   <div id="product-modal" class="product-modal">
     <button class="close-modal"><i class="fas fa-times"></i></button>
     <div class="modal-content">
       <div class="modal-image-container">
         <div class="modal-image">
           <div class="skeleton-loader modal-skeleton"></div>
-          <img id="modal-main-img" src="" alt="Product Image" class="hidden">
+          <img id="modal-main-img" src="" alt="Product" class="hidden">
         </div>
-        <div class="modal-gallery" id="modal-gallery">
-          <!-- Thumbnails will be injected -->
-        </div>
+        <div class="modal-gallery" id="modal-gallery"></div>
       </div>
       <div class="modal-details">
-        <h2 id="modal-title">Mahsulot nomi</h2>
-        <p id="modal-desc">Mahsulot haqida batafsil ma'lumot bu yerda ko'rinadi.</p>
-        <div class="product-specs" id="modal-specs">
-          <!-- Specs will be injected -->
-        </div>
-        <div class="modal-price-action">
-          <div class="modal-price">
-            <span id="modal-price-val">$0</span>
-          </div>
-          <button id="modal-add-btn" class="checkout-btn">Savatchaga qo'shish</button>
-        </div>
+        <h2 id="modal-title"></h2><p id="modal-desc"></p>
+        <div class="product-specs" id="modal-specs"></div>
+        <div class="modal-price-action"><span id="modal-price-val"></span><button id="modal-add-btn" class="checkout-btn">Qo'shish</button></div>
       </div>
     </div>
   </div>
 
-  <!-- Premium Checkout Modal -->
-  <div id="checkout-modal" class="checkout-modal">
-    <div class="checkout-header">
-      <h2>Buyurtmani rasmiylashtirish</h2>
-      <button class="close-checkout"><i class="fas fa-times"></i></button>
-    </div>
-
-    <!-- Step Indicator -->
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="product-modal">
+    <div class="checkout-header"><h2>Buyurtmani rasmiylashtirish</h2><button class="close-checkout close-modal"><i class="fas fa-times"></i></button></div>
     <div class="step-indicator">
-      <div class="step active" data-step="1">
-        <span class="step-num">1</span>
-        <span class="step-text">Yetkazib berish</span>
-      </div>
+      <div class="step active" data-step="1"><span class="step-num">1</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="2">
-        <span class="step-num">2</span>
-        <span class="step-text">To'lov</span>
-      </div>
+      <div class="step" data-step="2"><span class="step-num">2</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="3">
-        <span class="step-num">3</span>
-        <span class="step-text">Tasdiqlash</span>
-      </div>
+      <div class="step" data-step="3"><span class="step-num">3</span></div>
     </div>
-
-    <!-- Step 1: Shipping Info -->
     <div class="checkout-step active" id="step-1">
       <div class="form-grid">
-        <div class="form-group">
-          <label>Ismingiz</label>
-          <input type="text" id="checkout-name" placeholder="Masalan: Azizbek">
-          <span class="error-msg">Ism kamida 3 ta harfdan iborat bo'lishi kerak</span>
-        </div>
-        <div class="form-group">
-          <label>Telefon raqamingiz</label>
-          <input type="tel" id="checkout-phone" placeholder="+998 (__) ___ __ __">
-          <span class="error-msg">Telefon raqami noto'g'ri kiritilgan</span>
-        </div>
-        <div class="form-group full-width">
-          <label>Manzil</label>
-          <textarea id="checkout-address" placeholder="Shahar, tuman, ko'cha, uy raqami..."></textarea>
-          <span class="error-msg">Manzilni to'liq kiritish shart</span>
-        </div>
+        <div class="form-group"><label>Ismingiz</label><input type="text" id="checkout-name" placeholder="Hasanboy"></div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="checkout-phone" placeholder="+998"></div>
+        <div class="form-group full-width"><label>Manzil</label><textarea id="checkout-address"></textarea></div>
       </div>
     </div>
-
-    <!-- Step 2: Payment Method -->
     <div class="checkout-step" id="step-2">
       <div class="payment-options">
-        <label class="payment-card active">
-          <input type="radio" name="payment" value="cash" checked>
-          <i class="fas fa-money-bill-wave"></i>
-          <div class="payment-info">
-            <h4>Naqd pul</h4>
-            <p>Qabul qilganda to'lash</p>
-          </div>
-          <i class="fas fa-check-circle check-icon"></i>
-        </label>
-        <label class="payment-card">
-          <input type="radio" name="payment" value="card">
-          <i class="fas fa-credit-card"></i>
-          <div class="payment-info">
-            <h4>Online karta</h4>
-            <p>Uzcard, Humo, Visa</p>
-          </div>
-          <i class="fas fa-check-circle check-icon"></i>
-        </label>
+        <label class="payment-card active"><input type="radio" name="payment" value="cash" checked><h4>Naqd pul</h4></label>
+        <label class="payment-card"><input type="radio" name="payment" value="card"><h4>Online karta</h4></label>
       </div>
     </div>
-
-    <!-- Step 3: Confirmation -->
     <div class="checkout-step" id="step-3">
-      <div class="order-summary-box">
-        <div class="summary-item">
-          <span>Mahsulotlar soni:</span>
-          <span id="summary-count">0 ta</span>
-        </div>
-        <div class="summary-item total">
-          <span>Umumiy summa:</span>
-          <span id="summary-total">$0</span>
-        </div>
-        <div class="delivery-info-preview">
-          <p><i class="fas fa-user"></i> <span id="preview-name">-</span></p>
-          <p><i class="fas fa-phone"></i> <span id="preview-phone">-</span></p>
-          <p><i class="fas fa-map-marker-alt"></i> <span id="preview-address">-</span></p>
-        </div>
-      </div>
+      <div class="order-summary-box"><p>Summa: <span id="summary-total">$0</span></p><p>Mijoz: <span id="preview-name">-</span></p></div>
     </div>
-
-    <!-- Success View -->
-    <div class="checkout-success" id="checkout-success">
-      <div class="success-icon">
-        <i class="fas fa-check"></i>
-      </div>
-      <h2>Tabriklaymiz!</h2>
-      <p>Buyurtmangiz muvaffaqiyatli qabul qilindi.</p>
-      <p class="order-id">Buyurtma raqami: #<span id="order-id-val">84920</span></p>
-      <button class="cta-btn" onclick="location.reload()">Bosh sahifaga qaytish</button>
+    <div class="checkout-success" id="checkout-success" style="display:none; flex-direction:column; align-items:center; padding:3rem; text-align:center;">
+      <i class="fas fa-check-circle" style="font-size:5rem; color:var(--primary-color); margin-bottom:1.5rem;"></i>
+      <h2>Tabriklaymiz!</h2><p>Buyurtmangiz #<span id="order-id-val"></span> raqami bilan qabul qilindi.</p>
+      <button class="cta-btn" style="margin-top:2rem;" onclick="location.reload()">Asosiy sahifa</button>
     </div>
-
-    <div class="checkout-footer">
-      <button class="prev-btn" id="prev-step" style="display: none;">Orqaga</button>
-      <button class="next-btn" id="next-step">Keyingisi</button>
-    </div>
+    <div class="checkout-footer"><button class="prev-btn" id="prev-step" style="display:none;">Orqaga</button><button class="next-btn" id="next-step">Keyingisi</button></div>
   </div>
 
   <!-- User Auth Modal -->
   <div id="auth-modal" class="product-modal">
     <button class="close-modal" id="close-auth-modal"><i class="fas fa-times"></i></button>
-    <div class="auth-modal-content" style="padding: 3rem;">
-      <div class="auth-tabs" style="display: flex; gap: 2rem; margin-bottom: 2rem; justify-content: center;">
-        <button class="auth-tab active" id="tab-login" style="background: none; border: none; font-weight: 800; cursor: pointer; font-size: 1.2rem; color: var(--text-dark);">Kirish</button>
-        <button class="auth-tab" id="tab-register" style="background: none; border: none; font-weight: 800; cursor: pointer; font-size: 1.2rem; color: var(--text-light);">Ro'yxatdan o'tish</button>
-      </div>
-      
-      <form id="user-login-form" class="auth-form-view active">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="user-email" placeholder="example@mail.com" required>
-        </div>
-        <div class="form-group">
-          <label>Parol</label>
-          <input type="password" id="user-password" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="cta-btn" style="width: 100%;">Kirish</button>
-      </form>
-
-      <form id="user-register-form" class="auth-form-view" style="display: none;">
-        <div class="form-grid" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-          <div class="form-group">
-            <label>Ism</label>
-            <input type="text" id="reg-name" placeholder="Azizbek" required>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="reg-email" placeholder="example@mail.com" required>
-          </div>
-          <div class="form-group">
-            <label>Parol</label>
-            <input type="password" id="reg-password" placeholder="••••••••" required>
-          </div>
-        </div>
-        <button type="submit" class="cta-btn" style="width: 100%; margin-top: 1.5rem;">Ro'yxatdan o'tish</button>
-      </form>
-
-      <!-- Logged In State (My Page) -->
-      <div id="user-profile-view" style="display: none; text-align: left;">
-        <h3 id="profile-name" style="font-size: 1.5rem; margin-bottom: 1rem;">Xush kelibsiz, Azizbek!</h3>
-        <p id="profile-email" style="color: var(--text-light); margin-bottom: 2rem;">example@mail.com</p>
-        
-        <div class="order-history">
-          <h4 style="margin-bottom: 1rem;">Buyurtmalar tarixi</h4>
-          <div id="order-list" style="max-height: 200px; overflow-y: auto;">
-            <!-- Orders will be listed here -->
-            <p style="font-size: 0.9rem; color: var(--text-light);">Hozircha buyurtmalar yo'q</p>
-          </div>
-        </div>
-        
-        <button id="user-logout-btn" class="clear-cart-btn" style="margin-top: 2rem; width: 100%; text-align: center;">Chiqish</button>
-      </div>
+    <div class="auth-tabs" style="display:flex; justify-content:center; gap:2rem; padding:3rem 3rem 1rem;">
+      <button id="tab-login" class="auth-tab active" style="background:none; border:none; font-weight:800; cursor:pointer; font-size:1.2rem;">Kirish</button>
+      <button id="tab-register" class="auth-tab" style="background:none; border:none; font-weight:800; cursor:pointer; font-size:1.2rem; color:var(--text-light);">Ro'yxatdan o'tish</button>
     </div>
+    <form id="user-login-form" style="padding:0 3rem 3rem;"><div class="form-group"><label>Email</label><input type="email" id="user-email" required></div><div class="form-group"><label>Parol</label><input type="password" id="user-password" required></div><button type="submit" class="cta-btn" style="width:100%;">Kirish</button></form>
+    <form id="user-register-form" style="display:none; padding:0 3rem 3rem;"><div class="form-group"><label>Ism</label><input type="text" id="reg-name" required></div><div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div><div class="form-group"><label>Parol</label><input type="password" id="reg-password" required></div><button type="submit" class="cta-btn" style="width:100%;">Ro'yxatdan o'tish</button></form>
+    <div id="user-profile-view" style="display:none; padding:3rem;"><h3 id="profile-name"></h3><p id="profile-email" style="color:var(--text-light); margin-bottom:2rem;"></p><div class="order-history"><h4>Buyurtmalar tarixi</h4><div id="order-list"></div></div><button id="user-logout-btn" class="cta-btn" style="width:100%; margin-top:2rem;">Chiqish</button></div>
   </div>
 
-  <!-- Premium Toast Notification -->
   <div id="toast-container" class="toast-container"></div>
+  <script src="main.js"></script>
 </body>
-
 </html>
