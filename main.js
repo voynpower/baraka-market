@@ -360,10 +360,34 @@ function updateCartUI() {
     cart.forEach(item => {
         subtotal += item.price * item.quantity;
         const div = document.createElement('div'); div.className = 'cart-item';
-        div.innerHTML = `<img src="${item.mainImage}" alt="${item.name}" class="cart-item-img"><div><h4>${item.name}</h4><p>$${item.price.toLocaleString()} x ${item.quantity}</p></div><button onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>`;
+        div.innerHTML = `
+            <img src="${item.mainImage}" alt="${item.name}" class="cart-item-img">
+            <div class="cart-item-info">
+                <h4>${item.name}</h4>
+                <p>$${item.price.toLocaleString()} x ${item.quantity}</p>
+                <div class="quantity-controls">
+                    <button onclick="changeQuantity(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+                    <span class="qty-num">${item.quantity}</span>
+                    <button onclick="changeQuantity(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            <button class="remove-item" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>`;
         container.appendChild(div);
     });
     totalEl.innerText = `$${subtotal.toLocaleString()}`;
+}
+
+function changeQuantity(id, delta) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const item = cart.find(i => i.id === id);
+    if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartUI();
 }
 
 function removeFromCart(id) { let cart = JSON.parse(localStorage.getItem('cart')) || []; localStorage.setItem('cart', JSON.stringify(cart.filter(i => i.id !== id))); updateCartUI(); }
@@ -401,6 +425,50 @@ function initTheme() {
     }
 }
 
-function initScrollReveal() { const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); }); }, { threshold: 0.1 }); document.querySelectorAll('.reveal').forEach(el => obs.observe(el)); }
+function initScrollReveal() {
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('active');
+                // Trigger animation if it's the about section
+                if (e.target.id === 'about') animateStats();
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+function animateStats() {
+    const stats = document.querySelectorAll('.stat-number');
+    stats.forEach(stat => {
+        if (stat.classList.contains('animated')) return;
+        stat.classList.add('animated');
+        
+        const text = stat.innerText;
+        const target = parseInt(text.replace(/\D/g, ''));
+        const suffix = text.replace(/[0-9]/g, '');
+        let count = 0;
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
+
+        const updateCount = (currentTime) => {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            
+            // Easing function for smoother start/end
+            const easeProgress = progress * (2 - progress);
+            count = Math.floor(easeProgress * target);
+            
+            stat.innerText = count + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(updateCount);
+            } else {
+                stat.innerText = text; // Ensure final text is exact
+            }
+        };
+        requestAnimationFrame(updateCount);
+    });
+}
 function initHeaderScroll() { window.onscroll = () => { const h = document.querySelector('.header'); if(h) h.classList.toggle('scrolled', window.scrollY > 50); }; }
 function initTestimonialSlider() { const t = document.querySelector('.testimonial-track'); const s = document.querySelectorAll('.testimonial-card'); if (!t || s.length === 0) return; let i = 0; setInterval(() => { i = (i + 1) % s.length; t.style.transform = `translateX(-${i * 100}%)`; }, 5000); }
