@@ -1,5 +1,5 @@
 // admin.js - Final Clean & Error-Free Integrated Version
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = window.BarakaConfig?.apiBaseUrl || 'http://localhost:3000';
 const PRODUCTS_URL = `${BASE_URL}/products`;
 const ORDERS_URL = `${BASE_URL}/orders`;
 

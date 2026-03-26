@@ -1,5 +1,5 @@
 // login.js - Admin Authentication Logic
-const API_AUTH_URL = 'http://localhost:3000/auth/login';
+const API_AUTH_URL = `${window.BarakaConfig?.apiBaseUrl || 'http://localhost:3000'}/auth/login`;
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');

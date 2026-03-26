@@ -1,6 +1,6 @@
 // Baraka Market - Final Ultra-Stable Integrated Script (v2.8 - Instant Validation Fix)
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = window.BarakaConfig?.apiBaseUrl || 'http://localhost:3000';
 let allProducts = []; 
 let currentCategory = 'all';
 let currentSearch = '';
