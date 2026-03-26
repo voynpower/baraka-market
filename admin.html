@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="admin.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- CRITICAL: Chart.js Library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="admin-body">
@@ -19,6 +20,7 @@
       <nav class="nav">
         <ul>
           <li><a href="index.html">Saytga qaytish</a></li>
+          <li><a href="#" id="admin-logout-btn" style="color: #e74c3c; font-weight: 700;">Chiqish</a></li>
         </ul>
       </nav>
     </div>
@@ -117,59 +119,123 @@
   <div id="admin-modal" class="product-modal">
     <button class="close-modal" id="close-admin-modal"><i class="fas fa-times"></i></button>
     <div class="admin-modal-content">
-      <h2 id="modal-title">Mahsulot qo'shish</h2>
-      <form id="product-form" class="admin-form">
-        <input type="hidden" id="product-id">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nomi</label>
-            <input type="text" id="p-name" required>
+      <div class="admin-product-modal-shell">
+        <div class="admin-product-form-pane">
+          <div class="admin-modal-header-block">
+            <span class="admin-modal-eyebrow">Product Studio</span>
+            <h2 id="modal-title">Mahsulot qo'shish</h2>
+            <p>Mahsulot kartasini to'ldiring. O'ng tomonda natija qanday ko'rinishini darhol ko'rasiz.</p>
           </div>
-          <div class="form-group">
-            <label>Kategoriya</label>
-            <select id="p-category" required>
-              <option value="phones">Telefonlar</option>
-              <option value="laptops">Noutbuklar</option>
-              <option value="accessories">Aksessuarlar</option>
-              <option value="tablets">Planshetlar</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Narxi ($)</label>
-            <input type="number" id="p-price" required>
-          </div>
-          <div class="form-group">
-            <label>Zahira (Soni)</label>
-            <input type="number" id="p-stock" value="0" required>
-          </div>
-          <div class="form-group">
-            <label>Eski narxi (ixtiyoriy)</label>
-            <input type="number" id="p-old-price">
-          </div>
-          <div class="form-group full-width">
-            <label>Mahsulot rasmi (Upload)</label>
-            <div class="upload-container">
-              <input type="file" id="p-image-file" accept="image/*">
-              <div class="image-preview" id="image-preview">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Rasm tanlash</p>
+          <form id="product-form" class="admin-form">
+            <input type="hidden" id="product-id">
+            <div class="admin-form-section">
+              <div class="admin-section-title">
+                <h3>Asosiy ma'lumotlar</h3>
+                <span>Karta uchun muhim maydonlar</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Nomi</label>
+                  <input type="text" id="p-name" required>
+                </div>
+                <div class="form-group">
+                  <label>Kategoriya</label>
+                  <select id="p-category" required>
+                    <option value="phones">Telefonlar</option>
+                    <option value="laptops">Noutbuklar</option>
+                    <option value="accessories">Aksessuarlar</option>
+                    <option value="tablets">Planshetlar</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Narxi ($)</label>
+                  <input type="number" id="p-price" required>
+                </div>
+                <div class="form-group">
+                  <label>Eski narxi (ixtiyoriy)</label>
+                  <input type="number" id="p-old-price">
+                </div>
+                <div class="form-group">
+                  <label>Zahira (Soni)</label>
+                  <input type="number" id="p-stock" value="0" required>
+                </div>
+                <div class="form-group">
+                  <label>Badge (ixtiyoriy)</label>
+                  <input type="text" id="p-badge" placeholder="Top, New, -20%">
+                </div>
               </div>
             </div>
-            <input type="hidden" id="p-main-image" required>
-          </div>
-          <div class="form-group full-width">
-            <label>Tavsif</label>
-            <textarea id="p-description" rows="3" required></textarea>
-          </div>
+
+            <div class="admin-form-section">
+              <div class="admin-section-title">
+                <h3>Media va tavsif</h3>
+                <span>Rasm, izoh va texnik afzalliklar</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>Mahsulot rasmi</label>
+                  <div class="upload-container">
+                    <input type="file" id="p-image-file" accept="image/*">
+                    <div class="image-preview" id="image-preview">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <p>Rasm tanlash</p>
+                      <span>PNG, JPG yoki WEBP</span>
+                    </div>
+                  </div>
+                  <input type="hidden" id="p-main-image" required>
+                </div>
+                <div class="form-group full-width">
+                  <label>Tavsif</label>
+                  <textarea id="p-description" rows="4" required placeholder="Mahsulotning asosiy ustunliklarini yozing..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                  <label>Qisqa xususiyatlar</label>
+                  <textarea id="p-specs" rows="4" placeholder="Har qatorda bitta xususiyat yozing. Masalan: 120Hz display"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="checkout-btn" id="save-product">Saqlash</button>
+          </form>
         </div>
-        <button type="submit" class="checkout-btn" id="save-product">Saqlash</button>
-      </form>
+
+        <aside class="admin-product-preview-pane">
+          <div class="admin-preview-card">
+            <div class="admin-preview-topline">
+              <span id="preview-category-chip" class="admin-preview-chip">Telefonlar</span>
+              <span id="preview-stock-chip" class="admin-preview-stock">Zahira: 0</span>
+            </div>
+            <div class="admin-preview-image" id="admin-preview-image">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <div id="preview-badge" class="admin-preview-badge hidden">Top</div>
+            <h3 id="preview-product-name">Mahsulot nomi</h3>
+            <p id="preview-product-description">Mahsulot tavsifi shu yerda ko'rinadi.</p>
+            <div class="admin-preview-price">
+              <span id="preview-old-price" class="admin-preview-old-price hidden">$0</span>
+              <strong id="preview-price">$0</strong>
+            </div>
+            <div id="preview-spec-list" class="admin-preview-spec-list">
+              <div class="admin-preview-spec-item"><i class="fas fa-circle-check"></i><span>Xususiyatlar shu yerda ko'rinadi</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div id="order-details-modal" class="product-modal">
+    <button class="close-modal" id="close-order-modal"><i class="fas fa-times"></i></button>
+    <div class="admin-modal-content">
+      <h2>Buyurtma tafsilotlari</h2>
+      <div id="order-details-content"></div>
     </div>
   </div>
 
   <div id="cart-overlay" class="cart-overlay"></div>
   <div id="toast-container" class="toast-container"></div>
 
+  <script src="admin-api.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>

@@ -2,6 +2,8 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -11,13 +13,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'Admin login' })
-  async signIn(@Body() loginDto: Record<string, any>) {
+  async signIn(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto.email, loginDto.password);
   }
 
   @Post('user/register')
   @ApiOperation({ summary: 'User registration' })
-  async userRegister(@Body() data: Record<string, any>) {
+  async userRegister(@Body() data: RegisterUserDto) {
     return this.authService.userRegister({
       email: data.email,
       pass: data.password,
@@ -28,7 +30,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('user/login')
   @ApiOperation({ summary: 'User login' })
-  async userLogin(@Body() loginDto: Record<string, any>) {
+  async userLogin(@Body() loginDto: LoginDto) {
     return this.authService.userLogin(loginDto.email, loginDto.password);
   }
 

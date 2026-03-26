@@ -22,6 +22,11 @@ export class CreateProductDto {
   @IsOptional()
   oldPrice?: number;
 
+  @ApiProperty({ example: 12, required: false, default: 0 })
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
+
   @ApiProperty({ example: 'Yangi', required: false })
   @IsString()
   @IsOptional()

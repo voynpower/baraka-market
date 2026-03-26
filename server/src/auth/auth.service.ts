@@ -1,5 +1,10 @@
 // server/src/auth/auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -37,6 +42,14 @@ export class AuthService {
   }
 
   async userRegister(data: { email: string; pass: string; name?: string }) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('Bu email allaqachon ro\'yxatdan o\'tgan');
+    }
+
     const hashedPassword = await bcrypt.hash(data.pass, 10);
     return this.prisma.user.create({
       data: {
@@ -65,6 +78,10 @@ export class AuthService {
   }
 
   async setupAdmin() {
+    if (process.env.ENABLE_ADMIN_SETUP !== 'true') {
+      throw new ForbiddenException('Admin setup endpoint is disabled');
+    }
+
     const hashedPassword = await bcrypt.hash('admin1234', 10);
     return this.prisma.admin.upsert({
       where: { email: 'admin@barakamarket.uz' },

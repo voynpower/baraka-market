@@ -6,12 +6,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 
+const jwtSecret = process.env.JWT_SECRET || 'local-dev-secret';
+
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
       global: true,
-      secret: 'SECRET_KEY_FOR_JWT', // In production, move this to .env
+      secret: jwtSecret,
       signOptions: { expiresIn: '1d' },
     }),
   ],

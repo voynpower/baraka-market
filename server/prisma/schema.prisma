@@ -19,8 +19,10 @@ model Product {
   images      Json?
   description String   @db.Text
   specs       Json?
+  stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  reviews     Review[]
 
   @@map("products")
 }
@@ -36,16 +38,17 @@ model Order {
   status          String   @default("pending")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  userId          Int?     // Link to User if logged in
+  userId          Int?
   user            User?    @relation(fields: [userId], references: [id])
 
+  @@index([userId], map: "orders_userId_fkey")
   @@map("orders")
 }
 
 model Admin {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String   // Hashed password
+  password  String
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,13 +57,14 @@ model Admin {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int            @id @default(autoincrement())
+  email     String         @unique
   password  String
   name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   orders    Order[]
+  reviews   Review[]
   wishlist  WishlistItem[]
 
   @@map("users")
@@ -69,10 +73,26 @@ model User {
 model WishlistItem {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   productId Int
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, productId])
   @@map("wishlist_items")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productId Int
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId], map: "reviews_productId_fkey")
+  @@index([userId], map: "reviews_userId_fkey")
+  @@map("reviews")
 }

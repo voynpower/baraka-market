@@ -1,67 +1,93 @@
 // server/src/orders/orders.service.ts
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService
+  ) {}
 
   async create(createOrderDto: CreateOrderDto) {
-    return this.prisma.$transaction(async (tx) => {
-      // 1. Process items and update stock
-      const items = Array.isArray(createOrderDto.items) ? createOrderDto.items : JSON.parse(createOrderDto.items);
+    const order = await this.prisma.$transaction(async (tx) => {
+      const items = Array.isArray(createOrderDto.items) ? createOrderDto.items : JSON.parse(createOrderDto.items as string);
+      let calculatedTotal = 0;
       
       for (const item of items) {
-        const product = await tx.product.findUnique({
-          where: { id: item.id },
-        });
-
-        if (!product) {
-          console.error(`[ORDER ERROR] Product not found: ID ${item.id}`);
-          throw new BadRequestException(`Mahsulot topilmadi: ID ${item.id}`);
+        if (!item?.id || !item?.quantity || item.quantity < 1) {
+          throw new BadRequestException('Buyurtma mahsulotlari noto\'g\'ri formatda yuborildi');
         }
 
-        if (product.stock < item.quantity) {
-          console.warn(`[ORDER ERROR] Out of stock: ${product.name} (Available: ${product.stock}, Requested: ${item.quantity})`);
-          throw new BadRequestException(`${product.name} uchun yetarli zahira yo'q (Mavjud: ${product.stock})`);
+        const product = await tx.product.findUnique({ where: { id: item.id } });
+        if (!product || product.stock < item.quantity) {
+          throw new BadRequestException(`${product?.name || 'Mahsulot'} uchun yetarli zahira yo'q`);
         }
-
-        // 2. Reduce Stock
+        calculatedTotal += product.price * item.quantity;
         await tx.product.update({
           where: { id: item.id },
-          data: {
-            stock: { decrement: item.quantity },
-          },
+          data: { stock: { decrement: item.quantity } },
         });
       }
 
-      // 3. Create Order
       return tx.order.create({
         data: {
           customerName: createOrderDto.customerName,
           customerPhone: createOrderDto.customerPhone,
           customerAddress: createOrderDto.customerAddress,
-          totalAmount: createOrderDto.totalAmount,
+          totalAmount: calculatedTotal,
           paymentMethod: createOrderDto.paymentMethod,
-          items: createOrderDto.items,
+          items,
           userId: createOrderDto.userId,
         },
+        include: { user: true }
       });
     });
+
+    // Send Email Notification after successful order
+    const targetEmail = order.user?.email || 'admin@barakamarket.uz'; // Default to admin if guest
+    await this.mailService.sendOrderConfirmation(targetEmail, order);
+
+    return order;
   }
 
   async findAll() {
     return this.prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
   }
 
-  async updateStatus(id: number, status: string) {
-    return this.prisma.order.update({
+  async findOne(id: number) {
+    const order = await this.prisma.order.findUnique({
       where: { id },
-      data: { status },
+      include: {
+        user: {
+          select: { id: true, email: true, name: true },
+        },
+      },
     });
+
+    if (!order) {
+      throw new NotFoundException('Buyurtma topilmadi');
+    }
+
+    return order;
+  }
+
+  async updateStatus(id: number, status: string) {
+    const existingOrder = await this.prisma.order.findUnique({ where: { id } });
+    if (!existingOrder) {
+      throw new NotFoundException('Buyurtma topilmadi');
+    }
+
+    return this.prisma.order.update({ where: { id }, data: { status } });
   }
 
   async getStats() {
@@ -70,13 +96,9 @@ export class OrdersService {
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      // 1. Today's stats
-      const todayOrders = await this.prisma.order.findMany({
-        where: { createdAt: { gte: startOfToday } },
-      });
+      const todayOrders = await this.prisma.order.findMany({ where: { createdAt: { gte: startOfToday } } });
       const todayRevenue = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
 
-      // 2. Weekly trend
       const last7DaysOrders = await this.prisma.order.findMany({
         where: { createdAt: { gte: sevenDaysAgo } },
         orderBy: { createdAt: 'asc' },

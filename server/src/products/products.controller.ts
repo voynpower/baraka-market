@@ -1,8 +1,20 @@
 // server/src/products/products.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { memoryStorage } from 'multer';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -10,11 +22,18 @@ import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiBearerAuth } from '@nes
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
+import { ProductUploadsService } from './product-uploads.service';
+
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly productUploadsService: ProductUploadsService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,13 +49,18 @@ export class ProductsController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
-      destination: './uploads',
-      filename: (req, file, callback) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
+    storage: memoryStorage(),
+    limits: {
+      fileSize: MAX_IMAGE_SIZE,
+    },
+    fileFilter: (req, file, callback) => {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+        callback(new BadRequestException('Faqat JPG, PNG, WebP va AVIF rasmlariga ruxsat beriladi'), false);
+        return;
+      }
+
+      callback(null, true);
+    },
   }))
   @ApiOperation({ summary: 'Upload an image (Admin only)' })
   @ApiConsumes('multipart/form-data')
@@ -48,10 +72,12 @@ export class ProductsController {
       },
     },
   })
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return {
-      url: `http://localhost:3000/uploads/${file.filename}`,
-    };
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Rasm fayli topilmadi');
+    }
+
+    return this.productUploadsService.uploadProductImage(file);
   }
 
   @Get()

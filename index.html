@@ -183,7 +183,7 @@
           <div class="social-links"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a></div>
         </div>
       </div>
-      <div class="footer-bottom"><p>&copy; 2024 Baraka Market. Barcha huquqlar himoyalangan.</p></div>
+      <div class="footer-bottom"><p>&copy; 2026 Baraka Market. Barcha huquqlar himoyalangan.</p></div>
     </div>
   </footer>
 
@@ -192,8 +192,24 @@
     <div class="cart-sidebar-header"><h3>Savatcha</h3><button class="close-cart"><i class="fas fa-times"></i></button></div>
     <div id="cart-items" class="cart-items"></div>
     <div class="cart-sidebar-footer">
-      <div class="cart-total"><span>Jami:</span><span id="cart-total-price">$0</span></div>
-      <button class="checkout-btn">Xaridni rasmiylashtirish</button>
+      <!-- Promo Code Section -->
+      <div class="promo-code-box" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.02); border-radius: 12px;">
+        <p style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Promokod (Masalan: BARAKA10)</p>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="promo-input" placeholder="Kodni kiriting" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); outline: none;">
+          <button id="apply-promo-btn" style="padding: 8px 15px; background: var(--secondary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem;">Qo'llash</button>
+        </div>
+        <p id="promo-status" style="font-size: 0.75rem; margin-top: 5px; display: none;"></p>
+      </div>
+
+      <div class="cart-total">
+        <span>Jami:</span>
+        <div style="text-align: right;">
+          <span id="cart-original-price" style="display: none; text-decoration: line-through; font-size: 0.9rem; opacity: 0.5; margin-right: 10px;">$0</span>
+          <span id="cart-total-price">$0</span>
+        </div>
+      </div>
+      <button id="open-checkout-btn" class="checkout-btn">Xaridni rasmiylashtirish</button>
     </div>
   </div>
 
@@ -207,69 +223,316 @@
   <!-- Quick View Modal -->
   <div id="product-modal" class="product-modal">
     <button class="close-modal"><i class="fas fa-times"></i></button>
-    <div class="modal-content">
+    <div class="modal-content modal-content-product">
       <div class="modal-image-container">
-        <div class="modal-image">
+        <div class="modal-image modal-product-stage">
           <div class="skeleton-loader modal-skeleton"></div>
-          <img id="modal-main-img" src="" alt="Product" class="hidden">
+          <img id="modal-main-img" src="" alt="Product" class="hidden modal-product-main-image">
         </div>
         <div class="modal-gallery" id="modal-gallery"></div>
       </div>
       <div class="modal-details">
-        <h2 id="modal-title"></h2><p id="modal-desc"></p>
-        <div class="product-specs" id="modal-specs"></div>
-        <div class="modal-price-action"><span id="modal-price-val"></span><button id="modal-add-btn" class="checkout-btn">Qo'shish</button></div>
+        <div class="modal-product-topline">
+          <div id="modal-category-badge" class="modal-category-badge"></div>
+          <div id="modal-stock-badge" class="modal-stock-badge"></div>
+        </div>
+        <div class="modal-title-row">
+          <h2 id="modal-title"></h2>
+          <div class="modal-rating-chip">
+            <i class="fas fa-star"></i>
+            <span id="modal-rating-text">0.0</span>
+          </div>
+        </div>
+        <div class="modal-meta-row">
+          <div id="modal-badge-pill" class="modal-badge-pill hidden"></div>
+          <div class="modal-delivery-pill">
+            <i class="fas fa-shipping-fast"></i>
+            <span>24 soat ichida yetkazib berish</span>
+          </div>
+        </div>
+        <p id="modal-desc" class="modal-description"></p>
+        <div class="product-specs modal-specs-grid" id="modal-specs"></div>
+        <div class="modal-price-action">
+          <div class="modal-price-stack">
+            <span class="modal-price-label">Narx</span>
+            <div class="modal-price-values">
+              <span id="modal-old-price" class="modal-old-price hidden"></span>
+              <span id="modal-price-val" class="modal-price-value"></span>
+            </div>
+          </div>
+          <div class="modal-purchase-panel">
+            <div class="modal-quantity-control">
+              <button id="modal-qty-decrease" type="button" class="modal-qty-btn" aria-label="Miqdorni kamaytirish">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span id="modal-qty-value" class="modal-qty-value">1</span>
+              <button id="modal-qty-increase" type="button" class="modal-qty-btn" aria-label="Miqdorni oshirish">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="modal-action-buttons">
+              <button id="modal-add-btn" class="add-to-cart cta-btn">Savatga qo'shish</button>
+              <button id="modal-buy-now-btn" class="checkout-btn modal-buy-now-btn">Hozir xarid qilish</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-reviews-section">
+          <div class="modal-reviews-header">
+            <h3>Mijozlar fikri</h3>
+            <span class="modal-reviews-subtitle">Haqiqiy xaridorlarning sharhlari</span>
+          </div>
+          <div id="review-form-container" class="review-form-panel" style="display:none;">
+            <div class="star-rating-input" id="star-rating-input">
+              <i class="fas fa-star" data-rating="5"></i><i class="fas fa-star" data-rating="4"></i><i class="fas fa-star" data-rating="3"></i><i class="fas fa-star" data-rating="2"></i><i class="fas fa-star" data-rating="1"></i>
+            </div>
+            <textarea id="review-comment" placeholder="Fikringizni yozing..." rows="3" class="review-comment-box"></textarea>
+            <button id="submit-review-btn" class="cta-btn review-submit-btn">Yuborish</button>
+          </div>
+          <div id="login-to-review" class="review-login-note" style="display:none;">
+            <p>Sharh qoldirish uchun <a href="#" onclick="openSidebar('auth-modal')">tizimga kiring</a></p>
+          </div>
+          <div id="modal-review-list" class="modal-review-list"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Checkout Modal -->
-  <div id="checkout-modal" class="product-modal">
-    <div class="checkout-header"><h2>Buyurtmani rasmiylashtirish</h2><button class="close-checkout close-modal"><i class="fas fa-times"></i></button></div>
+  <div id="checkout-modal" class="product-modal checkout-modal">
+    <div class="checkout-header">
+      <div>
+        <span class="checkout-eyebrow">Secure Checkout</span>
+        <h2>Buyurtmani rasmiylashtirish</h2>
+      </div>
+      <button class="close-checkout close-modal"><i class="fas fa-times"></i></button>
+    </div>
     <div class="step-indicator">
-      <div class="step active" data-step="1"><span class="step-num">1</span></div>
+      <div class="step active" data-step="1"><span class="step-num">1</span><span class="step-text">Ma'lumot</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="2"><span class="step-num">2</span></div>
+      <div class="step" data-step="2"><span class="step-num">2</span><span class="step-text">To'lov</span></div>
       <div class="step-line"></div>
-      <div class="step" data-step="3"><span class="step-num">3</span></div>
+      <div class="step" data-step="3"><span class="step-num">3</span><span class="step-text">Tasdiqlash</span></div>
     </div>
     <div class="checkout-step active" id="step-1">
+      <div class="checkout-section-head">
+        <h3>Yetkazib berish ma'lumotlari</h3>
+        <p>Buyurtma va yetkazib berish uchun asosiy ma'lumotlarni kiriting.</p>
+      </div>
       <div class="form-grid">
         <div class="form-group"><label>Ismingiz</label><input type="text" id="checkout-name" placeholder="Hasanboy"></div>
         <div class="form-group"><label>Telefon</label><input type="tel" id="checkout-phone" placeholder="+998"></div>
-        <div class="form-group full-width"><label>Manzil</label><textarea id="checkout-address"></textarea></div>
+        <div class="form-group full-width"><label>Manzil</label><textarea id="checkout-address" placeholder="Toshkent shahri, Yunusobod tumani, ..."></textarea></div>
       </div>
     </div>
     <div class="checkout-step" id="step-2">
+      <div class="checkout-section-head">
+        <h3>To'lov usulini tanlang</h3>
+        <p>Sizga qulay bo'lgan usulni tanlang. Karta ma'lumotlari faqat tasdiqlash uchun ishlatiladi.</p>
+      </div>
       <div class="payment-options">
-        <label class="payment-card active"><input type="radio" name="payment" value="cash" checked><h4>Naqd pul</h4></label>
-        <label class="payment-card"><input type="radio" name="payment" value="card"><h4>Online karta</h4></label>
+        <label class="payment-card active" data-payment="cash">
+          <input type="radio" name="payment" value="cash" checked>
+          <div class="payment-card-icon"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="payment-card-copy">
+            <h4>Naqd pul</h4>
+            <p>Buyurtma yetib borganda to'laysiz.</p>
+          </div>
+        </label>
+        <label class="payment-card" data-payment="card">
+          <input type="radio" name="payment" value="card">
+          <div class="payment-card-icon"><i class="far fa-credit-card"></i></div>
+          <div class="payment-card-copy">
+            <h4>Online karta</h4>
+            <p>Visa, Mastercard yoki Uzcard orqali to'lang.</p>
+          </div>
+        </label>
+      </div>
+      <div id="payment-cash-panel" class="payment-detail-panel active">
+        <div class="payment-note">
+          <i class="fas fa-truck"></i>
+          <div>
+            <strong>Naqd to'lov tanlandi</strong>
+            <p>Kuryer kelganda buyurtma summasini naqd ko'rinishda to'laysiz.</p>
+          </div>
+        </div>
+      </div>
+      <div id="payment-card-panel" class="payment-detail-panel">
+        <div class="payment-preview-card" id="payment-preview-card">
+          <div class="payment-preview-top">
+            <span class="payment-preview-chip">Secure</span>
+            <span class="payment-brand-badge" id="payment-brand-badge">Card</span>
+          </div>
+          <strong class="payment-preview-number" id="payment-preview-number">8600 1234 5678 9012</strong>
+          <div class="payment-preview-bottom">
+            <div>
+              <span>Karta egasi</span>
+              <strong id="payment-preview-holder">HASANBOY HAKIMOV</strong>
+            </div>
+            <div>
+              <span>Amal muddati</span>
+              <strong id="payment-preview-expiry">MM/YY</strong>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid payment-form-grid">
+          <div class="form-group full-width">
+            <label>Karta egasi</label>
+            <input type="text" id="card-holder" placeholder="HASANBOY HAKIMOV">
+          </div>
+          <div class="form-group full-width">
+            <label>Karta raqami</label>
+            <input type="text" id="card-number" inputmode="numeric" maxlength="19" placeholder="8600 1234 5678 9012">
+          </div>
+          <div class="form-group">
+            <label>Amal qilish muddati</label>
+            <input type="text" id="card-expiry" inputmode="numeric" maxlength="5" placeholder="MM/YY">
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="password" id="card-cvv" inputmode="numeric" maxlength="3" placeholder="123">
+          </div>
+        </div>
+        <div class="payment-security-note">
+          <i class="fas fa-shield-alt"></i>
+          <span>To'lov ma'lumotlari xavfsiz ulanish orqali tekshiriladi.</span>
+        </div>
       </div>
     </div>
     <div class="checkout-step" id="step-3">
-      <div class="order-summary-box"><p>Summa: <span id="summary-total">$0</span></p><p>Mijoz: <span id="preview-name">-</span></p></div>
+      <div class="checkout-section-head">
+        <h3>Buyurtmani tasdiqlang</h3>
+        <p>Quyidagi ma'lumotlarni tekshirib, buyurtmani tasdiqlang.</p>
+      </div>
+      <div class="order-summary-box">
+        <div class="summary-topline">
+          <div>
+            <span class="summary-label">Umumiy summa</span>
+            <strong id="summary-total">$0</strong>
+          </div>
+          <div class="summary-payment-chip" id="summary-payment-chip">Naqd pul</div>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-label">Mijoz</span>
+            <strong id="preview-name">-</strong>
+            <p id="preview-phone">-</p>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Yetkazib berish</span>
+            <strong>24 soat ichida</strong>
+            <p id="preview-address">-</p>
+          </div>
+        </div>
+        <div class="order-summary-items" id="checkout-summary-items"></div>
+      </div>
     </div>
-    <div class="checkout-success" id="checkout-success" style="display:none; flex-direction:column; align-items:center; padding:3rem; text-align:center;">
-      <i class="fas fa-check-circle" style="font-size:5rem; color:var(--primary-color); margin-bottom:1.5rem;"></i>
-      <h2>Tabriklaymiz!</h2><p>Buyurtmangiz #<span id="order-id-val"></span> raqami bilan qabul qilindi.</p>
-      <button class="cta-btn" style="margin-top:2rem;" onclick="location.reload()">Asosiy sahifa</button>
+    <div class="checkout-processing" id="checkout-processing" style="display:none;">
+      <div class="checkout-processing-card">
+        <div class="processing-orb"></div>
+        <div class="processing-rings">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <h3>To'lov tekshirilmoqda</h3>
+        <p>Karta ma'lumotlari xavfsiz tekshirilmoqda. Iltimos, kuting.</p>
+      </div>
+    </div>
+    <div class="checkout-success" id="checkout-success" style="display:none;">
+      <div class="checkout-success-card">
+        <div class="success-badge">
+          <i class="fas fa-check"></i>
+        </div>
+        <span class="checkout-success-eyebrow">Buyurtma muvaffaqiyatli</span>
+        <h2>Tabriklaymiz!</h2>
+        <p>Buyurtmangiz qabul qilindi va operatorlarimiz tez orada siz bilan bog'lanadi.</p>
+        <div class="checkout-success-meta">
+          <div class="success-meta-item">
+            <span>Buyurtma raqami</span>
+            <strong>#<span id="order-id-val"></span></strong>
+          </div>
+          <div class="success-meta-item">
+            <span>Holat</span>
+            <strong>Tasdiqlanishi kutilmoqda</strong>
+          </div>
+        </div>
+        <button class="cta-btn checkout-success-btn" onclick="location.reload()">Asosiy sahifa</button>
+      </div>
     </div>
     <div class="checkout-footer"><button class="prev-btn" id="prev-step" style="display:none;">Orqaga</button><button class="next-btn" id="next-step">Keyingisi</button></div>
   </div>
 
   <!-- User Auth Modal -->
-  <div id="auth-modal" class="product-modal">
+  <div id="auth-modal" class="product-modal auth-modal">
     <button class="close-modal" id="close-auth-modal"><i class="fas fa-times"></i></button>
-    <div class="auth-tabs" style="display:flex; justify-content:center; gap:2rem; padding:3rem 3rem 1rem;">
-      <button id="tab-login" class="auth-tab active" style="background:none; border:none; font-weight:800; cursor:pointer; font-size:1.2rem;">Kirish</button>
-      <button id="tab-register" class="auth-tab" style="background:none; border:none; font-weight:800; cursor:pointer; font-size:1.2rem; color:var(--text-light);">Ro'yxatdan o'tish</button>
+    <div class="auth-modal-header">
+      <span class="auth-modal-eyebrow">Member Access</span>
+      <h2>Shaxsiy kabinet</h2>
+      <p>Buyurtmalarni kuzatish, sharh yozish va saralanganlarni saqlash uchun tizimga kiring.</p>
     </div>
-    <form id="user-login-form" style="padding:0 3rem 3rem;"><div class="form-group"><label>Email</label><input type="email" id="user-email" required></div><div class="form-group"><label>Parol</label><input type="password" id="user-password" required></div><button type="submit" class="cta-btn" style="width:100%;">Kirish</button></form>
-    <form id="user-register-form" style="display:none; padding:0 3rem 3rem;"><div class="form-group"><label>Ism</label><input type="text" id="reg-name" required></div><div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div><div class="form-group"><label>Parol</label><input type="password" id="reg-password" required></div><button type="submit" class="cta-btn" style="width:100%;">Ro'yxatdan o'tish</button></form>
-    <div id="user-profile-view" style="display:none; padding:3rem;"><h3 id="profile-name"></h3><p id="profile-email" style="color:var(--text-light); margin-bottom:2rem;"></p><div class="order-history"><h4>Buyurtmalar tarixi</h4><div id="order-list"></div></div><button id="user-logout-btn" class="cta-btn" style="width:100%; margin-top:2rem;">Chiqish</button></div>
+    <div class="auth-tabs">
+      <button id="tab-login" class="auth-tab active">Kirish</button>
+      <button id="tab-register" class="auth-tab">Ro'yxatdan o'tish</button>
+    </div>
+    <form id="user-login-form" class="auth-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="user-email" required>
+      </div>
+      <div class="form-group">
+        <label>Parol</label>
+        <input type="password" id="user-password" required>
+      </div>
+      <div class="auth-action-row">
+        <button type="button" class="auth-secondary-btn" id="auth-back-from-login">Saytga qaytish</button>
+        <button type="submit" class="cta-btn auth-submit-btn">Kirish</button>
+      </div>
+    </form>
+    <form id="user-register-form" class="auth-form" style="display:none;">
+      <div class="form-group">
+        <label>Ism</label>
+        <input type="text" id="reg-name" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" required>
+      </div>
+      <div class="form-group">
+        <label>Parol</label>
+        <input type="password" id="reg-password" required>
+      </div>
+      <div class="auth-action-row">
+        <button type="button" class="auth-secondary-btn" id="auth-back-from-register">Saytga qaytish</button>
+        <button type="submit" class="cta-btn auth-submit-btn">Ro'yxatdan o'tish</button>
+      </div>
+    </form>
+    <div id="user-profile-view" class="auth-profile-view" style="display:none;">
+      <div class="auth-profile-card">
+        <div class="auth-profile-top">
+          <div class="auth-profile-avatar"><i class="fas fa-user"></i></div>
+          <div>
+            <h3 id="profile-name"></h3>
+            <p id="profile-email"></p>
+          </div>
+        </div>
+        <div class="order-history">
+          <h4>Buyurtmalar tarixi</h4>
+          <div id="order-list"></div>
+        </div>
+        <div class="auth-action-row auth-profile-actions">
+          <button type="button" class="auth-secondary-btn" id="auth-back-from-profile">Saytga qaytish</button>
+          <button id="user-logout-btn" class="cta-btn auth-submit-btn auth-logout-btn">Chiqish</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="toast-container" class="toast-container"></div>
+  <script src="main-helpers.js"></script>
+  <script src="main-auth.js"></script>
+  <script src="main-commerce.js"></script>
+  <script src="main-product.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
