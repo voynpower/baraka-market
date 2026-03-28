@@ -320,9 +320,9 @@
         <p>Buyurtma va yetkazib berish uchun asosiy ma'lumotlarni kiriting.</p>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label>Ismingiz</label><input type="text" id="checkout-name" placeholder="Hasanboy"></div>
-        <div class="form-group"><label>Telefon</label><input type="tel" id="checkout-phone" placeholder="+998"></div>
-        <div class="form-group full-width"><label>Manzil</label><textarea id="checkout-address" placeholder="Toshkent shahri, Yunusobod tumani, ..."></textarea></div>
+        <div class="form-group"><label>Ismingiz</label><input type="text" id="checkout-name" placeholder="Hasanboy" autocomplete="name"></div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="checkout-phone" placeholder="+998" inputmode="tel" autocomplete="tel"></div>
+        <div class="form-group full-width"><label>Manzil</label><textarea id="checkout-address" placeholder="Toshkent shahri, Yunusobod tumani, ..." autocomplete="street-address"></textarea></div>
       </div>
     </div>
     <div class="checkout-step" id="step-2">
@@ -478,11 +478,11 @@
     <form id="user-login-form" class="auth-form">
       <div class="form-group">
         <label>Email</label>
-        <input type="email" id="user-email" required>
+        <input type="email" id="user-email" inputmode="email" autocomplete="email" required>
       </div>
       <div class="form-group">
         <label>Parol</label>
-        <input type="password" id="user-password" required>
+        <input type="password" id="user-password" autocomplete="current-password" required>
       </div>
       <div class="auth-action-row">
         <button type="button" class="auth-secondary-btn" id="auth-back-from-login">Saytga qaytish</button>
@@ -492,15 +492,15 @@
     <form id="user-register-form" class="auth-form" style="display:none;">
       <div class="form-group">
         <label>Ism</label>
-        <input type="text" id="reg-name" required>
+        <input type="text" id="reg-name" autocomplete="name" required>
       </div>
       <div class="form-group">
         <label>Email</label>
-        <input type="email" id="reg-email" required>
+        <input type="email" id="reg-email" inputmode="email" autocomplete="email" required>
       </div>
       <div class="form-group">
         <label>Parol</label>
-        <input type="password" id="reg-password" required>
+        <input type="password" id="reg-password" autocomplete="new-password" required>
       </div>
       <div class="auth-action-row">
         <button type="button" class="auth-secondary-btn" id="auth-back-from-register">Saytga qaytish</button>
